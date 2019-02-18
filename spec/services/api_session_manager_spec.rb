@@ -102,13 +102,38 @@ describe ApiSessionManager do
     context "#authenticate" do
       let!(:token) { subject.try_login(password)[:token] }
 
-      it "checks user session & api token" do
-        Timecop.freeze(Time.current)
-        result = described_class.new(user.id).authenticate(token)
+      context "valid token" do
+        it "checks user session & api token" do
+          Timecop.freeze(Time.current)
+          result = described_class.new(user.id).authenticate(token)
 
-        expect(result).to eq(user)
-        expect(user.api_session.api_token_last_verified).to eq(Time.current)
-        Timecop.return
+          expect(result).to eq(user)
+          expect(user.api_session.api_token_last_verified).to eq(Time.current)
+          Timecop.return
+        end
+      end
+
+      context "invalid token" do
+        context "user has active session" do
+          it "doesn't authenticate" do
+            original_verification = user.api_session.api_token_last_verified
+            result = described_class.new(user.id).authenticate("badtoken1234")
+
+            expect(result).to eq(false)
+            expect(user.api_session.reload.api_token_last_verified).to eq(original_verification)
+          end
+        end
+
+        context "user doesn't have active session" do
+          before { subject.logout }
+
+          it "doesn't authenticate" do
+            result = described_class.new(user.id).authenticate("sadtoken0987")
+
+            expect(result).to eq(false)
+            expect(user.api_session.reload.api_token_last_verified).to eq(nil)
+          end
+        end
       end
     end
   end
