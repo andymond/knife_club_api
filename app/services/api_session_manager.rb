@@ -50,22 +50,23 @@ class ApiSessionManager
 
     def count_failure
       session.update(failed_login_count: attempts + 1)
-      invalid_attempt
+      attempts < 4 ? invalid_attempt : countdown_message
     end
 
     def lock_user_out
-      session.update(lock_expires_at: 15.minutes.from_now)
+      session.update(lock_expires_at: 15.minutes.from_now, failed_login_count: attempts + 1)
       locked_out_message
     end
 
     def start_tracking
       user.create_api_session(failed_login_count: 1)
+      @session = user.api_session
       invalid_attempt
     end
 
     def validate_user(password)
       return false unless user
-      return false if user.api_session && user.api_session&locked_out?
+      return false if session && session&.locked_out
       @user.valid_password?(password)
     end
 
@@ -78,15 +79,20 @@ class ApiSessionManager
       }
     end
 
+
     def successful_attempt
       { status: 200, token: token }
     end
 
     def invalid_attempt
-      { status: 401, message: "Invalid Credentials"}
+      { status: 401, message: "Invalid Credentials" }
+    end
+
+    def countdown_message
+      { status: 401, message: "#{6 - attempts} Login Attempts Remain" }
     end
 
     def locked_out_message
-      { status: 409, message: "No more login attempts, please try again later."}
+      { status: 409, message: "No more login attempts, please try again later." }
     end
 end

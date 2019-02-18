@@ -34,8 +34,21 @@ describe ApiSessionManager do
       end
 
       context "4 failed login attempts" do
-        it "doesn't log user in & begins failed attempt countdown" do
+        before { 3.times { |n| subject.try_login("wrongPassw#{n}rd") } }
 
+        it "doesn't log user in & begins failed attempt countdown" do
+          result = subject.try_login("rightPassw0rd??")
+
+          expect(user.api_session.api_token_digest).to eq(nil)
+          expect(user.api_session.api_token_last_verified).to eq(nil)
+          expect(user.api_session.failed_login_count).to eq(4)
+          expect(user.api_session.lock_expires_at).to be(nil)
+          expect(result[:status]).to eq(401)
+          expect(result[:message]).to eq("2 Login Attempts Remain")
+
+          result = subject.try_login("One last time")
+
+          expect(result[:message]).to eq("1 Login Attempts Remain")
         end
       end
 
