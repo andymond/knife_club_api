@@ -100,8 +100,15 @@ describe ApiSessionManager do
     end
 
     context "#authenticate" do
-      it "checks user session & api token" do
+      let!(:token) { subject.try_login(password)[:token] }
 
+      it "checks user session & api token" do
+        Timecop.freeze(Time.current)
+        result = described_class.new(user.id).authenticate(token)
+
+        expect(result).to eq(user)
+        expect(user.api_session.api_token_last_verified).to eq(Time.current)
+        Timecop.return
       end
     end
   end
