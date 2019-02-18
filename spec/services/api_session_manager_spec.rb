@@ -29,7 +29,7 @@ describe ApiSessionManager do
           expect(user.api_session.failed_login_count).to eq(1)
           expect(user.api_session.lock_expires_at).to be(nil)
           expect(result[:status]).to eq(401)
-          expect(result[:message]).to eq("Invalid Credentails")
+          expect(result[:message]).to eq("Invalid Credentials")
         end
       end
 
