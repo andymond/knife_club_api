@@ -15,7 +15,8 @@ class ApiSessionManager
   end
 
   def logout
-    @user.api_session.update(api_token_digest: nil, api_token_last_verified: nil)
+    @user.api_session&.reset
+    logout_message
   end
 
   def authenticate(token)
@@ -82,6 +83,10 @@ class ApiSessionManager
 
     def successful_attempt
       { status: 200, token: token }
+    end
+
+    def logout_message
+      { status: 200, message: "Logged user out." }
     end
 
     def invalid_attempt

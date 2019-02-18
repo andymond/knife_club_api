@@ -87,8 +87,8 @@ describe ApiSessionManager do
 
       it "logs user out" do
         expect(user.api_session.api_token_last_verified).to be_an_instance_of(ActiveSupport::TimeWithZone)
-
-        subject.logout
+        result = subject.logout
+        user.api_session.reload
 
         expect(user.api_session.api_token_digest).to eq(nil)
         expect(user.api_session.api_token_last_verified).to eq(nil)
