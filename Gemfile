@@ -11,7 +11,6 @@ gem 'puma', '~> 3.11'
 gem 'active_model_serializers', '~> 0.10.8'
 
 gem 'sorcery'
-gem 'jwt'
 gem 'pundit'
 gem 'bcrypt', '~> 3.1.7'
 gem 'symmetric-encryption', '~> 4.1', '>= 4.1.2'
