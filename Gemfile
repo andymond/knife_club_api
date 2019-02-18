@@ -38,6 +38,7 @@ group :development do
 end
 
 group :test do
+  gem 'timecop'
   gem 'rspec-rails'
   gem 'database_cleaner', '~> 1.7'
   gem 'shoulda-matchers', '~> 3.1', '>= 3.1.2'

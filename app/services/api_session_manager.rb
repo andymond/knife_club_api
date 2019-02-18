@@ -93,6 +93,6 @@ class ApiSessionManager
     end
 
     def locked_out_message
-      { status: 409, message: "No more login attempts, please try again later." }
+      { status: 403, message: "No more login attempts, please try again later." }
     end
 end

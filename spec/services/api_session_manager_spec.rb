@@ -53,8 +53,31 @@ describe ApiSessionManager do
       end
 
       context "6 failed login attempts" do
-        it "doesn't log user in & locks user out" do
+        before { 5.times { |n| subject.try_login("wrongPassw#{n}rd") } }
 
+        it "doesn't log user in & locks user out" do
+          result = subject.try_login("rightPassw0rd??")
+
+          expect(user.api_session.api_token_digest).to eq(nil)
+          expect(user.api_session.api_token_last_verified).to eq(nil)
+          expect(user.api_session.failed_login_count).to eq(6)
+          expect(user.api_session.lock_expires_at).to be_an_instance_of(ActiveSupport::TimeWithZone)
+          expect(result[:status]).to eq(403)
+          expect(result[:message]).to eq("No more login attempts, please try again later.")
+        end
+
+        it "allows user to try log in after 15 minutes" do
+          subject.try_login("rightPassw0rd??")
+
+          expect(user.api_session.failed_login_count).to eq(6)
+          expect(user.api_session.locked_out).to eq(true)
+
+          Timecop.travel(15.minutes.from_now)
+
+          expect(user.api_session.locked_out).to eq(false)
+          expect(subject.try_login(password)[:status]).to eq(200)
+
+          Timecop.return
         end
       end
     end
