@@ -83,8 +83,19 @@ describe ApiSessionManager do
     end
 
     context "#logout" do
-      it "logs user out" do
+      before { subject.try_login(password) }
 
+      it "logs user out" do
+        expect(user.api_session.api_token_last_verified).to be_an_instance_of(ActiveSupport::TimeWithZone)
+
+        subject.logout
+
+        expect(user.api_session.api_token_digest).to eq(nil)
+        expect(user.api_session.api_token_last_verified).to eq(nil)
+        expect(user.api_session.failed_login_count).to eq(0)
+        expect(user.api_session.lock_expires_at).to be(nil)
+        expect(result[:status]).to eq(200)
+        expect(result[:message]).to eq("Logged user out.")
       end
     end
 
