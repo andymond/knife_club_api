@@ -73,6 +73,11 @@ GEM
       dotenv (= 2.5.0)
       railties (>= 3.2, < 6.0)
     erubi (1.7.1)
+    factory_bot (4.11.0)
+      activesupport (>= 3.0.0)
+    factory_bot_rails (4.11.0)
+      factory_bot (~> 4.11.0)
+      railties (>= 3.0.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
@@ -204,6 +209,7 @@ GEM
       coercible (~> 1.0)
     thor (0.20.3)
     thread_safe (0.3.6)
+    timecop (0.9.1)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     websocket-driver (0.7.0)
@@ -221,6 +227,7 @@ DEPENDENCIES
   byebug
   database_cleaner (~> 1.7)
   dotenv-rails
+  factory_bot_rails
   listen (>= 3.0.5, < 3.2)
   paranoia (~> 2.4, >= 2.4.1)
   pg (>= 0.18, < 2.0)
@@ -236,6 +243,7 @@ DEPENDENCIES
   spring
   spring-watcher-listen (~> 2.0.0)
   symmetric-encryption (~> 4.1, >= 4.1.2)
+  timecop
   tzinfo-data
 
 RUBY VERSION
