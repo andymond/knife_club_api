@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_26_181058) do
+ActiveRecord::Schema.define(version: 2019_05_26_181635) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,15 @@ ActiveRecord::Schema.define(version: 2019_05_26_181058) do
     t.boolean "public"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "recipes", force: :cascade do |t|
+    t.string "name"
+    t.boolean "public", default: true
+    t.bigint "section_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_id"], name: "index_recipes_on_section_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -75,6 +84,7 @@ ActiveRecord::Schema.define(version: 2019_05_26_181058) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token"
   end
 
+  add_foreign_key "recipes", "sections"
   add_foreign_key "sections", "cookbooks"
   add_foreign_key "user_api_sessions", "users"
   add_foreign_key "user_roles", "cookbooks"
