@@ -7,7 +7,8 @@ class V1::SessionsController < ApplicationController
   end
 
   def destroy
-    session_manager.logout
+    logout_result = session_manager.logout
+    render json: logout_result.except(:status), status: logout_result[:status]
   end
 
   private
