@@ -5,6 +5,7 @@ describe User do
     it { should have_one(:api_session) }
     it { should have_many(:user_roles) }
     it { should have_many(:roles) }
+    it { should have_many(:cookbooks) }
   end
 
   context "validations" do
