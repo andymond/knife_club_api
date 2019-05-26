@@ -8,16 +8,23 @@ describe User do
   end
 
   context "validations" do
+    let(:user) { described_class.new }
+
     it "validates password" do
-      user = described_class.new
       user.password = "xy"
       user.valid?
+
       expect(user.errors[:password]).to include("is too short (minimum is 3 characters)")
       should validate_presence_of(:password_confirmation)
     end
 
     it "validates email" do
       should validate_presence_of(:email)
+      invalid_email = ["lameemail", "notreal@", "fakecontactinfo.com"].sample
+      user.email = invalid_email
+      user.valid?
+
+      expect(user.errors[:email]).to include("is invalid")
     end
   end
 end
