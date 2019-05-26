@@ -17,28 +17,28 @@ ActiveRecord::Schema.define(version: 2019_05_26_181635) do
 
   create_table "cookbooks", force: :cascade do |t|
     t.string "name"
-    t.boolean "public"
+    t.boolean "public", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "recipes", force: :cascade do |t|
-    t.string "name"
-    t.boolean "public", default: true
-    t.bigint "section_id"
+    t.string "name", null: false
+    t.boolean "public", default: false
+    t.bigint "section_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["section_id"], name: "index_recipes_on_section_id"
   end
 
   create_table "roles", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "sections", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.bigint "cookbook_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -57,11 +57,11 @@ ActiveRecord::Schema.define(version: 2019_05_26_181635) do
   end
 
   create_table "user_roles", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "role_id"
+    t.bigint "user_id", null: false
+    t.bigint "role_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "cookbook_id"
+    t.bigint "cookbook_id", null: false
     t.index ["cookbook_id"], name: "index_user_roles_on_cookbook_id"
     t.index ["role_id"], name: "index_user_roles_on_role_id"
     t.index ["user_id"], name: "index_user_roles_on_user_id"
