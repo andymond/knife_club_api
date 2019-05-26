@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 2019_05_26_181635) do
   enable_extension "plpgsql"
 
   create_table "cookbooks", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.boolean "public", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
