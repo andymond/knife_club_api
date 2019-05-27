@@ -10,4 +10,13 @@ describe Cookbook do
   context "validations" do
     it { should validate_presence_of(:name) }
   end
+
+  context "callbacks" do
+    let(:cookbook) { create(:cookbook) }
+
+    it "creates 'general' section on create" do
+      expect{ cookbook }.to change{ Section.count }.by 1
+      expect(cookbook.sections.first.name).to eq(cookbook.name + " general")
+    end
+  end
 end
