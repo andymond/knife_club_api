@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: cookbooks
+#
+#  id         :bigint(8)        not null, primary key
+#  name       :string
+#  public     :boolean          default(FALSE)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 require "rails_helper"
 
 describe Cookbook do

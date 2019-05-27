@@ -1,3 +1,25 @@
+# == Schema Information
+#
+# Table name: user_api_sessions
+#
+#  id                      :bigint(8)        not null, primary key
+#  api_token_digest        :string
+#  api_token_last_verified :datetime
+#  failed_login_count      :integer
+#  lock_expires_at         :datetime
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  user_id                 :bigint(8)
+#
+# Indexes
+#
+#  index_user_api_sessions_on_user_id  (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
+
 class UserApiSession < ApplicationRecord
   belongs_to :user
 
