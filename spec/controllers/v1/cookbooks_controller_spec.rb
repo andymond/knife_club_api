@@ -28,13 +28,12 @@ describe V1::CookbooksController, type: :controller do
   let(:auth_headers_2) { { "User" => user_2.id, "Authorization" => token_2 } }
 
   describe "#show" do
-    before(:each) { request.headers.merge(auth_headers_2) }
-
     context "cookbook is public" do
       let(:public_cookbook) { user.create_cookbook(name: "Indian Food", public: true) }
       let(:create_public_cb_request) { get :show, params: { id: public_cookbook.id } }
 
       it "allows user to view cookbook" do
+        request.headers.merge(auth_headers_2)
         create_public_cb_request
 
         expect(response).to have_http_status(200)
@@ -45,7 +44,15 @@ describe V1::CookbooksController, type: :controller do
       let(:private_cookbook) { user.create_cookbook(name: "Top Secret Sauces") }
       let(:create_private_cb_request) { get :show, params: { id: private_cookbook.id } }
 
+      it "allows user with permission to view cookbook" do
+        request.headers.merge(auth_headers)
+        create_private_cb_request
+
+        expect(response).to have_http_status(200)
+      end
+
       it "prevents user without permission from viewing cookbook" do
+        request.headers.merge(auth_headers_2)
         create_private_cb_request
 
         expect(response).to have_http_status(404)
