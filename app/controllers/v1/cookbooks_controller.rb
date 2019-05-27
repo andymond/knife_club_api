@@ -6,7 +6,8 @@ class V1::CookbooksController < ApplicationController
 
   def show
     cookbook = Cookbook.find_by(id: params[:id])
-    cookbook ? respond_with(cookbook) : not_found
+    authorize cookbook
+    respond_with(cookbook)
   end
 
   private

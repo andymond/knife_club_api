@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::API
+  include Pundit
+  rescue_from Pundit::NotAuthorizedError, with: :not_found
+
   before_action :authenticate
   attr_reader :current_user
 

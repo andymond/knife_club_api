@@ -42,4 +42,8 @@ class User < ApplicationRecord
     user_roles.create(role: Role.owner, cookbook: cookbook)
     cookbook
   end
+
+  def can_read?(cookbook_id)
+    user_roles.find_by(cookbook_id: cookbook_id)
+  end
 end
