@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   before_action :authenticate
+  attr_reader :current_user
 
   private
     def authenticate
@@ -12,7 +13,8 @@ class ApplicationController < ActionController::API
       end
     end
 
-    def current_user
-      @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+    def creation_failed(model)
+      errors = model&.errors&.messages
+      render json: { failure: "#{model&.class} creation failed - #{errors}" }, status: 409
     end
 end

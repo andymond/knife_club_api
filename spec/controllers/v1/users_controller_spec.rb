@@ -22,7 +22,11 @@ describe V1::UsersController do
       before { post :create, params: { user: valid_user_params.except(missing_param.sample) } }
 
       it { expect(response).to have_http_status(409) }
-      it { expect(JSON.parse(response.body)).to eq({ "failure" => "user creation failed" })}
+      it "Sends failure with error" do
+        json_response = JSON.parse(response.body, symbolize_names: true)
+
+        expect(json_response[:failure]).to include("User creation failed")
+      end
     end
   end
 end
