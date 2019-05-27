@@ -17,4 +17,8 @@ class ApplicationController < ActionController::API
       errors = model&.errors&.messages
       render json: { failure: "#{model&.class} creation failed - #{errors}" }, status: 409
     end
+
+    def not_found
+      head 404
+    end
 end

@@ -36,4 +36,10 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP
+
+  def create_cookbook(cookbook_attrs)
+    cookbook = Cookbook.create(cookbook_attrs)
+    user_roles.create(role: Role.owner, cookbook: cookbook)
+    cookbook
+  end
 end
