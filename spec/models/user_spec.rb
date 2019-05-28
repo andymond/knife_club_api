@@ -52,4 +52,41 @@ describe User do
       expect(user.errors[:email]).to include("is invalid")
     end
   end
+
+  context "instance methods" do
+    let(:owner) { create(:user) }
+    let!(:cookbook) { owner.create_cookbook(name: "Icy Delicacies") }
+
+    describe "#create_cookbook" do
+      it "creates a cook book w/ proper relationship" do
+        expect(owner.cookbooks).to include(cookbook)
+        expect(owner.user_roles.where(cookbook: cookbook, role: Role.owner).count).to eq(1)
+      end
+    end
+
+    describe "#can_read?(cookbook)" do
+      it "returns true if user has any relation to private cookbook" do
+        expect(owner.can_read?(cookbook.id)).to eq(true)
+      end
+
+      it "returns false if user does not have relationship to private cookbook" do
+        rando = create(:user)
+        expect(rando.can_read?(cookbook.id)).to eq(false)
+      end
+    end
+
+    describe "#allow_to_read(cookbook)" do
+      it "grants read_only role to user" do
+        reader = create(:user)
+        expect{ reader.allow_to_read(cookbook.id) }.to change{ reader.user_roles.where(cookbook: cookbook, role: Role.read_only ).count }.by 1
+      end
+    end
+
+    describe "#allow_contributions_to(cookbook)?" do
+      it "grants read_only role to user" do
+        contributor = create(:user)
+        expect{ contributor.allow_contributions_to(cookbook.id) }.to change{ contributor.user_roles.where(cookbook: cookbook, role: Role.contributor).count }.by 1
+      end
+    end
+  end
 end

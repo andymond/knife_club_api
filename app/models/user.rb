@@ -44,6 +44,21 @@ class User < ApplicationRecord
   end
 
   def can_read?(cookbook_id)
-    user_roles.find_by(cookbook_id: cookbook_id)
+    role = user_roles.find_by(cookbook_id: cookbook_id)
+    role ? true : false
+  end
+
+  def allow_contributions_to(cookbook_id)
+    user_roles.find_or_create_by(
+      cookbook_id: cookbook_id,
+      role: Role.contributor
+    )
+  end
+
+  def allow_to_read(cookbook_id)
+    user_roles.find_or_create_by(
+      cookbook_id: cookbook_id,
+      role: Role.read_only
+    )
   end
 end

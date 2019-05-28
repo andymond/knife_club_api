@@ -1,16 +1,30 @@
 require "rails_helper"
 
 describe V1::CookbooksController, type: :controller do
-  let(:user) { create(:user, password: "coolpassword", password_confirmation: "coolpassword") }
-  let(:token) { ApiSessionManager.new(user.id).try_login("coolpassword")[:token] }
-  let(:auth_headers) { { "User" => user.id, "Authorization" => token } }
+  let(:owner) { create(:user, password: "opassword", password_confirmation: "opassword") }
+  let(:o_token) { ApiSessionManager.new(owner.id).try_login("opassword")[:token] }
+  let(:owner_headers) { { "User" => owner.id, "Authorization" => o_token } }
+
+  let(:contributor) { create(:user, password: "cpassword", password_confirmation: "cpassword") }
+  let(:c_token) { ApiSessionManager.new(contributor.id).try_login("cpassword")[:token] }
+  let(:contributor_headers) { { "User" => contributor.id, "Authorization" => c_token } }
+
+  let(:reader) { create(:user, password: "rpassword", password_confirmation: "rpassword") }
+  let(:r_token) { ApiSessionManager.new(reader.id).try_login("rpassword")[:token] }
+  let(:reader_headers) { { "User" => reader.id, "Authorization" => r_token } }
+
+  let(:unassociated) { create(:user, password: "upassword", password_confirmation: "upassword") }
+  let(:u_token) { ApiSessionManager.new(unassociated.id).try_login("upassword")[:token] }
+  let(:unassoc_headers) { { "User" => unassociated.id, "Authorization" => u_token } }
+
+  let(:random_headers) { [owner_headers, contributor_headers, reader_headers, unassoc_headers].sample }
 
   describe "#create" do
     let(:create_request) { post :create, params: { name: "Test Cookbook" } }
-    before { request.headers.merge(auth_headers) }
+    before { request.headers.merge(owner_headers) }
 
-    it { expect{ create_request }.to change { user.cookbooks.count }.by 1 }
-    it { expect{ create_request }.to change{ user.user_roles.where(role: Role.owner).count }.by 1 }
+    it { expect{ create_request }.to change { owner.cookbooks.count }.by 1 }
+    it { expect{ create_request }.to change{ owner.user_roles.where(role: Role.owner).count }.by 1 }
     it { expect{ create_request }.to change { Section.count }.by 1 }
 
     it "returns serialized cookbook" do
@@ -23,17 +37,20 @@ describe V1::CookbooksController, type: :controller do
     end
   end
 
-  let(:user_2) { create(:user, password: "coolpassword", password_confirmation: "coolpassword") }
-  let(:token_2) { ApiSessionManager.new(user_2.id).try_login("coolpassword")[:token] }
-  let(:auth_headers_2) { { "User" => user_2.id, "Authorization" => token_2 } }
-
   describe "#show" do
-    context "cookbook is public" do
-      let(:public_cookbook) { user.create_cookbook(name: "Indian Food", public: true) }
-      let(:create_public_cb_request) { get :show, params: { id: public_cookbook.id } }
+    before(:each) do
+      if defined?(cookbook)
+        contributor.allow_contributions_to(cookbook.id)
+        reader.allow_to_read(cookbook.id)
+      end
+    end
 
-      it "allows user to view cookbook" do
-        request.headers.merge(auth_headers_2)
+    context "cookbook is public" do
+      let(:cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
+      let(:create_public_cb_request) { get :show, params: { id: cookbook.id } }
+
+      it "allows anyone to view cookbook" do
+        request.headers.merge(random_headers)
         create_public_cb_request
 
         expect(response).to have_http_status(200)
@@ -41,18 +58,32 @@ describe V1::CookbooksController, type: :controller do
     end
 
     context "cookbook is private" do
-      let(:private_cookbook) { user.create_cookbook(name: "Top Secret Sauces") }
-      let(:create_private_cb_request) { get :show, params: { id: private_cookbook.id } }
+      let(:cookbook) { owner.create_cookbook(name: "Top Secret Sauces") }
+      let(:create_private_cb_request) { get :show, params: { id: cookbook.id } }
 
-      it "allows user with permission to view cookbook" do
-        request.headers.merge(auth_headers)
+      it "allows owner to view cookbook" do
+        request.headers.merge(owner_headers)
         create_private_cb_request
 
         expect(response).to have_http_status(200)
       end
 
-      it "prevents user without permission from viewing cookbook" do
-        request.headers.merge(auth_headers_2)
+      it "allows contributors to view cookbook" do
+        request.headers.merge(contributor_headers)
+        create_private_cb_request
+
+        expect(response).to have_http_status(200)
+      end
+
+      it "allows readers to view cookbook" do
+        request.headers.merge(reader_headers)
+        create_private_cb_request
+
+        expect(response).to have_http_status(200)
+      end
+
+      it "prevents unassociated from viewing cookbook" do
+        request.headers.merge(unassoc_headers)
         create_private_cb_request
 
         expect(response).to have_http_status(404)
@@ -60,13 +91,71 @@ describe V1::CookbooksController, type: :controller do
     end
 
     context "cookbook doesn't exist" do
-      before { request.headers.merge(auth_headers) }
-
       it "returns 404" do
+        request.headers.merge(random_headers)
+
         get :show, params: { id: "x" }
 
         expect(response).to have_http_status(404)
       end
     end
   end
+
+  # describe "#update" do
+  #   context "cookbook is public" do
+  #     let(:public_cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
+  #     let(:create_public_cb_request) { put :update, params: { id: public_cookbook.id, name: "Not Indian Food" } }
+  #
+  #     it "allows owner to update cookbook" do
+  #       request.headers.merge(owner_headers)
+  #       create_public_cb_request
+  #
+  #       expect(response).to have_http_status(200)
+  #     end
+  #
+  #     it "prevents user without permission from updating cookbook" do
+  #       request.headers.merge(unassoc_headers)
+  #       create_public_cb_request
+  #
+  #       expect(response).to have_http_status(403)
+  #     end
+  #   end
+  #
+  #   context "cookbook is private" do
+  #     let(:private_cookbook) { owner.create_cookbook(name: "Top Secret Sauces") }
+  #     let(:create_private_cb_request) { put :update, params: { id: private_cookbook.id, name: "Extra Secret Sauces" } }
+  #
+  #     it "allows owner to update cookbook" do
+  #       request.headers.merge(owner_headers)
+  #       create_public_cb_request
+  #
+  #       expect(response).to have_http_status(200)
+  #     end
+  #
+  #     it "prevents contributors from updating cookbook" do
+  #
+  #     end
+  #
+  #     it "prevents read_only from updating cookbook" do
+  #
+  #     end
+  #
+  #     it "prevents user without permission from updating cookbook" do
+  #       request.headers.merge(unassoc_headers)
+  #       create_public_cb_request
+  #
+  #       expect(response).to have_http_status(403)
+  #     end
+  #   end
+  #
+  #   context "cookbook doesn't exist" do
+  #     before { request.headers.merge(owner_headers) }
+  #
+  #     it "returns 404" do
+  #       get :put, params: { id: "x", name: "Cookbook that doesn't exist"}
+  #
+  #       expect(response).to have_http_status(404)
+  #     end
+  #   end
+  # end
 end
