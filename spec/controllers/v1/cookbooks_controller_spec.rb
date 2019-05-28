@@ -101,61 +101,67 @@ describe V1::CookbooksController, type: :controller do
     end
   end
 
-  # describe "#update" do
-  #   context "cookbook is public" do
-  #     let(:public_cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
-  #     let(:create_public_cb_request) { put :update, params: { id: public_cookbook.id, name: "Not Indian Food" } }
-  #
-  #     it "allows owner to update cookbook" do
-  #       request.headers.merge(owner_headers)
-  #       create_public_cb_request
-  #
-  #       expect(response).to have_http_status(200)
-  #     end
-  #
-  #     it "prevents user without permission from updating cookbook" do
-  #       request.headers.merge(unassoc_headers)
-  #       create_public_cb_request
-  #
-  #       expect(response).to have_http_status(403)
-  #     end
-  #   end
-  #
-  #   context "cookbook is private" do
-  #     let(:private_cookbook) { owner.create_cookbook(name: "Top Secret Sauces") }
-  #     let(:create_private_cb_request) { put :update, params: { id: private_cookbook.id, name: "Extra Secret Sauces" } }
-  #
-  #     it "allows owner to update cookbook" do
-  #       request.headers.merge(owner_headers)
-  #       create_public_cb_request
-  #
-  #       expect(response).to have_http_status(200)
-  #     end
-  #
-  #     it "prevents contributors from updating cookbook" do
-  #
-  #     end
-  #
-  #     it "prevents read_only from updating cookbook" do
-  #
-  #     end
-  #
-  #     it "prevents user without permission from updating cookbook" do
-  #       request.headers.merge(unassoc_headers)
-  #       create_public_cb_request
-  #
-  #       expect(response).to have_http_status(403)
-  #     end
-  #   end
-  #
-  #   context "cookbook doesn't exist" do
-  #     before { request.headers.merge(owner_headers) }
-  #
-  #     it "returns 404" do
-  #       get :put, params: { id: "x", name: "Cookbook that doesn't exist"}
-  #
-  #       expect(response).to have_http_status(404)
-  #     end
-  #   end
-  # end
+  describe "#update" do
+    context "cookbook is public" do
+      let(:public_cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
+      let(:create_public_cb_request) { put :update, params: { id: public_cookbook.id, name: "Not Indian Food" } }
+
+      it "allows owner to update cookbook" do
+        request.headers.merge(owner_headers)
+        create_public_cb_request
+
+        expect(response).to have_http_status(200)
+      end
+
+      it "prevents user without permission from updating cookbook" do
+        request.headers.merge(unassoc_headers)
+        create_public_cb_request
+
+        expect(response).to have_http_status(403)
+      end
+    end
+
+    context "cookbook is private" do
+      let(:private_cookbook) { owner.create_cookbook(name: "Top Secret Sauces") }
+      let(:create_private_cb_request) { put :update, params: { id: private_cookbook.id, name: "Extra Secret Sauces" } }
+
+      it "allows owner to update cookbook" do
+        request.headers.merge(owner_headers)
+        create_public_cb_request
+
+        expect(response).to have_http_status(200)
+      end
+
+      it "prevents contributors from updating cookbook" do
+        request.headers.merge(contributor_headers)
+        create_public_cb_request
+
+        expect(response).to have_http_status(403)
+      end
+
+      it "prevents read_only from updating cookbook" do
+        request.headers.merge(reader_headers)
+        create_public_cb_request
+
+        expect(response).to have_http_status(403)
+      end
+
+      it "prevents user without permission from updating cookbook" do
+        request.headers.merge(unassoc_headers)
+        create_public_cb_request
+
+        expect(response).to have_http_status(403)
+      end
+    end
+
+    context "cookbook doesn't exist" do
+      before { request.headers.merge(owner_headers) }
+
+      it "returns 404" do
+        get :put, params: { id: "x", name: "Cookbook that doesn't exist"}
+
+        expect(response).to have_http_status(404)
+      end
+    end
+  end
 end
