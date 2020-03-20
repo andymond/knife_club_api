@@ -18,7 +18,7 @@ describe Role do
 
   context "class methods" do
     it "has convenience find_bys" do
-      %i(owner contributor read_only).each do |name|
+      %i(owner contributor read).each do |name|
         role = Role.send(name)
 
         expect(role).to be_an_instance_of(Role)
@@ -29,10 +29,10 @@ describe Role do
 
   context "instance methods" do
     it "has convenience role checks" do
-      %i(owner contributor read_only).map do |name|
+      %i(owner contributor read).map do |name|
         role = Role.send(name)
 
-        %i(owner? contributor? read_only?).each  do |check|
+        %i(owner? contributor? read?).each  do |check|
           is_role = role.send(check)
           expected_result = name.to_s == check.to_s.delete_suffix("?")
 
