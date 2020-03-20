@@ -18,4 +18,10 @@ class Role < ApplicationRecord
       instance_variable_set("@#{name}", find_by(name: name))
     end
   end
+
+  Rails.configuration.user_roles.each do |name|
+    define_method(name + "?") do
+      self.name == name
+    end
+  end
 end
