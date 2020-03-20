@@ -75,15 +75,34 @@ describe User do
       end
     end
 
-    describe "#allow_to_read(cookbook)" do
-      it "grants read_only role to user" do
+    describe "#can_update?(cookbook)" do
+      it "returns true if user has contribute role for cookbook" do
+        contributor = create(:user)
+        contributor.allow_contributions_to(cookbook.id)
+
         reader = create(:user)
-        expect{ reader.allow_to_read(cookbook.id) }.to change{ reader.user_roles.where(cookbook: cookbook, role: Role.read_only ).count }.by 1
+        reader.allow_to_read(cookbook.id)
+
+        expect(contributor.can_update?(cookbook.id)).to eq(true)
+        expect(owner.can_update?(cookbook.id)).to eq(true)
+      end
+
+
+      it "returns false if user does not have contribute role for cookbook" do
+        rando = create(:user)
+        expect(rando.can_update?(cookbook.id)).to eq(false)
+      end
+    end
+
+    describe "#allow_to_read(cookbook)" do
+      it "grants reader role to user" do
+        reader = create(:user)
+        expect{ reader.allow_to_read(cookbook.id) }.to change{ reader.user_roles.where(cookbook: cookbook, role: Role.reader ).count }.by 1
       end
     end
 
     describe "#allow_contributions_to(cookbook)?" do
-      it "grants read_only role to user" do
+      it "grants contribution role to user" do
         contributor = create(:user)
         expect{ contributor.allow_contributions_to(cookbook.id) }.to change{ contributor.user_roles.where(cookbook: cookbook, role: Role.contributor).count }.by 1
       end

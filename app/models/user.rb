@@ -40,11 +40,18 @@ class User < ApplicationRecord
   def create_cookbook(cookbook_attrs)
     cookbook = Cookbook.create(cookbook_attrs)
     user_roles.create(role: Role.owner, cookbook: cookbook)
+    user_roles.create(role: Role.contributor, cookbook: cookbook)
+    user_roles.create(role: Role.reader, cookbook: cookbook)
     cookbook
   end
 
   def can_read?(cookbook_id)
-    role = user_roles.find_by(cookbook_id: cookbook_id)
+    any_role = user_roles.find_by(cookbook_id: cookbook_id, role: Role.reader)
+    any_role ? true : false
+  end
+
+  def can_update?(cookbook_id)
+    role = user_roles.find_by(cookbook_id: cookbook_id, role: Role.contributor)
     role ? true : false
   end
 
@@ -58,7 +65,7 @@ class User < ApplicationRecord
   def allow_to_read(cookbook_id)
     user_roles.find_or_create_by(
       cookbook_id: cookbook_id,
-      role: Role.read_only
+      role: Role.reader
     )
   end
 end
