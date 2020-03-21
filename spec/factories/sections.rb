@@ -16,10 +16,9 @@
 #
 #  fk_rails_...  (cookbook_id => cookbooks.id)
 #
-
-class Section < ApplicationRecord
-  validates_presence_of :name
-
-  belongs_to :cookbook
-  has_many :recipes, dependent: :destroy
+FactoryBot.define do
+  factory :section do
+    cookbook
+    name { 'test' }
+  end
 end

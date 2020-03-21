@@ -3,7 +3,7 @@
 # Table name: users
 #
 #  id                                  :bigint(8)        not null, primary key
-#  access_count_to_reset_password_page :integer          default(0)
+#  access_count_to_reset_password_page :integer          default("0")
 #  crypted_password                    :string
 #  email                               :string           not null
 #  first_name                          :string
@@ -27,8 +27,11 @@ class User < ApplicationRecord
 
   has_one :api_session, class_name: "UserApiSession"
   has_many :user_cookbook_roles
-  has_many :roles, through: :user_cookbook_roles
+  has_many :user_recipe_roles
+  has_many :cookbook_roles, through: :user_cookbook_roles, foreign_key: :role_id, class_name: "Role"
+  has_many :recipe_roles, through: :user_recipe_roles, foreign_key: :role_id, class_name: "Role"
   has_many :cookbooks, -> { distinct }, through: :user_cookbook_roles
+  has_many :recipes, -> { distinct }, through: :user_recipe_roles
 
   validates :password, length: { minimum: 3 }, if: -> { new_record? || changes[:crypted_password] }
   validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }
@@ -37,15 +40,16 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP
 
-  def create_cookbook(cookbook_attrs)
-    cookbook = Cookbook.create(cookbook_attrs)
-    user_cookbook_roles.create(role: Role.owner, cookbook: cookbook)
-    user_cookbook_roles.create(role: Role.contributor, cookbook: cookbook)
-    user_cookbook_roles.create(role: Role.reader, cookbook: cookbook)
-    cookbook
+  def create_permission_record(klass, attrs)
+    record = klass.create!(attrs)
+    send(record.role_set).create(record.role_key => record, role: Role.owner)
+    send(record.role_set).create(record.role_key => record, role: Role.contributor)
+    send(record.role_set).create(record.role_key => record, role: Role.reader)
+    record
   end
 
   def can_read?(record)
+    return true if record.public
     role = send(record.role_set).find_by(record.role_key => record, role: Role.reader)
     role ? true : false
   end
@@ -60,11 +64,18 @@ class User < ApplicationRecord
     role ? true : false
   end
 
+  def allow_to_read(record)
+    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.reader)
+  end
+
   def allow_contributions_to(record)
+    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.reader)
     send(record.role_set).find_or_create_by(record.role_key => record, role: Role.contributor)
   end
 
-  def allow_to_read(record)
+  def grant_all_access(record)
     send(record.role_set).find_or_create_by(record.role_key => record, role: Role.reader)
+    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.contributor)
+    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.owner)
   end
 end

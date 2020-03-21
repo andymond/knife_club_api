@@ -3,7 +3,7 @@
 # Table name: users
 #
 #  id                                  :bigint(8)        not null, primary key
-#  access_count_to_reset_password_page :integer          default(0)
+#  access_count_to_reset_password_page :integer          default("0")
 #  crypted_password                    :string
 #  email                               :string           not null
 #  first_name                          :string
@@ -28,8 +28,11 @@ describe User do
   context "relationships" do
     it { should have_one(:api_session) }
     it { should have_many(:user_cookbook_roles) }
-    it { should have_many(:roles) }
+    it { should have_many(:user_recipe_roles) }
+    it { should have_many(:cookbook_roles) }
+    it { should have_many(:recipe_roles) }
     it { should have_many(:cookbooks) }
+    it { should have_many(:recipes) }
   end
 
   context "validations" do
@@ -55,7 +58,7 @@ describe User do
 
   context "instance methods" do
     let(:owner) { create(:user) }
-    let!(:cookbook) { owner.create_cookbook(name: "Icy Delicacies") }
+    let!(:cookbook) { owner.create_permission_record(Cookbook, { name: "Icy Delicacies" }) }
 
     describe "#create_cookbook" do
       it "creates a cook book w/ proper relationship" do

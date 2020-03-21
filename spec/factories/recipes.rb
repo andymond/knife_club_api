@@ -17,16 +17,9 @@
 #
 #  fk_rails_...  (section_id => sections.id)
 #
-
-class Recipe < ApplicationRecord
-  include PermissionRecord
-
-  validates_presence_of :name
-
-  belongs_to :section
-  has_many :instructions, dependent: :destroy
-  has_many :recipe_ingredients, dependent: :destroy
-  has_many :user_recipe_roles, dependent: :destroy
-  has_many :ingredients, through: :recipe_ingredients
-  has_many :users, through: :user_recipe_roles
+FactoryBot.define do
+  factory :recipe do
+    section
+    name { 'test' }
+  end
 end
