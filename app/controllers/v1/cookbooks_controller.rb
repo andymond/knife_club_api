@@ -27,7 +27,11 @@ class V1::CookbooksController < ApplicationController
   def destroy
     cookbook = Cookbook.find_by(id: params[:id])
     authorize cookbook
-    render json: cookbook
+    if cookbook.destroy
+      render json: cookbook
+    else
+      update_failed(cookbook)
+    end
   end
 
   private

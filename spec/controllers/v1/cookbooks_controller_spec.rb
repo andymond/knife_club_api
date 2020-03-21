@@ -65,7 +65,10 @@ describe V1::CookbooksController, type: :controller do
       end
 
       it "can #destroy" do
+        delete :destroy, params: { id: private_cookbook.id }
 
+        expect(response).to have_http_status(200)
+        expect { private_cookbook.reload }.to raise_error ActiveRecord::RecordNotFound
       end
     end
   end
@@ -94,7 +97,10 @@ describe V1::CookbooksController, type: :controller do
       end
 
       it "can not #destroy" do
+        delete :destroy, params: { id: public_cookbook.id }
 
+        expect(response).to have_http_status(404)
+        expect(public_cookbook.reload.persisted?).to eq(true)
       end
     end
   end
@@ -121,7 +127,10 @@ describe V1::CookbooksController, type: :controller do
       end
 
       it "can not #destroy" do
+        delete :destroy, params: { id: public_cookbook.id }
 
+        expect(response).to have_http_status(404)
+        expect(public_cookbook.reload.persisted?).to eq(true)
       end
     end
   end
@@ -145,7 +154,10 @@ describe V1::CookbooksController, type: :controller do
       end
 
       it "can not #destroy" do
+        delete :destroy, params: { id: private_cookbook.id }
 
+        expect(response).to have_http_status(404)
+        expect(public_cookbook.reload.persisted?).to eq(true)
       end
     end
 
@@ -165,40 +177,11 @@ describe V1::CookbooksController, type: :controller do
       end
 
       it "can not #destroy" do
+        delete :destroy, params: { id: public_cookbook.id }
 
+        expect(response).to have_http_status(404)
+        expect(public_cookbook.reload.persisted?).to eq(true)
       end
-    end
-  end
-
-
-
-
-
-
-
-  xdescribe "#destroy" do
-    let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Indian Food", public: [true, false].sample }) }
-    let(:create_cb_request) { delete :destroy, params: { id: cookbook.id, name: "Not Indian Food" } }
-
-    it "allows owner to delete cookbook" do
-      request.headers.merge(owner_headers)
-      create_cb_request
-
-      expect(response).to have_http_status(200)
-    end
-
-    it "prevents contributors from deleting cookbook" do
-      request.headers.merge(contributor_headers)
-      create_cb_request
-
-      expect(response).to have_http_status(404)
-    end
-
-    it "prevents read_only from deleting cookbook" do
-      request.headers.merge(reader_headers)
-      create_cb_request
-
-      expect(response).to have_http_status(404)
     end
   end
 end
