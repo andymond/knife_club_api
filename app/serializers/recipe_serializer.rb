@@ -1,3 +1,5 @@
 class RecipeSerializer < ActiveModel::Serializer
-  attributes :id, :name, :section
+  attributes :id, :name
+
+  belongs_to :section
 end

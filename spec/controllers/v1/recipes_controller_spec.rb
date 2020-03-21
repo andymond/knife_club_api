@@ -27,10 +27,10 @@ describe V1::RecipesController, type: :controller do
 
       it "can #create" do
         post :create, params: { cookbook_id: cookbook.id, name: "Create Recipe" }
-        result = JSON.parse(response.body, symbolize_names: true)
+        payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(201)
-        expect(result[:name]).to eq("Create Recipe")
+        expect(payload[:recipe][:name]).to eq("Create Recipe")
       end
 
       it "can #show" do
@@ -38,7 +38,7 @@ describe V1::RecipesController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(recipe.id)
+        expect(payload[:recipe][:id]).to eq(recipe.id)
       end
 
       it "can #index" do
@@ -46,7 +46,7 @@ describe V1::RecipesController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[0][:id]).to eq(recipe.id)
+        expect(payload[:recipes][0][:id]).to eq(recipe.id)
       end
 
       it "#can update" do
@@ -54,7 +54,7 @@ describe V1::RecipesController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:name]).to eq("Updated Name")
+        expect(payload[:recipe][:name]).to eq("Updated Name")
         expect(recipe.reload.name).to eq("Updated Name")
       end
 
@@ -77,12 +77,12 @@ describe V1::RecipesController, type: :controller do
 
       it "can #create" do
         post :create, params: { cookbook_id: cookbook.id, name: "Create Recipe" }
-        result = JSON.parse(response.body, symbolize_names: true)
+        payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(201)
-        expect(result[:name]).to eq("Create Recipe")
+        expect(payload[:recipe][:name]).to eq("Create Recipe")
 
-        created_recipe = Recipe.find(result[:id])
+        created_recipe = Recipe.find(payload[:recipe][:id])
 
         expect(contributor.owns?(created_recipe)).to eq(true)
         expect(owner.owns?(created_recipe)).to eq(true)
@@ -93,7 +93,7 @@ describe V1::RecipesController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(recipe.id)
+        expect(payload[:recipe][:id]).to eq(recipe.id)
       end
 
       it "#can update" do
@@ -101,7 +101,7 @@ describe V1::RecipesController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:name]).to eq("Updated Name")
+        expect(payload[:recipe][:name]).to eq("Updated Name")
         expect(recipe.reload.name).to eq("Updated Name")
       end
 
@@ -134,7 +134,7 @@ describe V1::RecipesController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(recipe.id)
+        expect(payload[:recipe][:id]).to eq(recipe.id)
       end
 
       it "#can not update" do
