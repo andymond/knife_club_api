@@ -21,8 +21,8 @@ describe V1::CookbooksController, type: :controller do
 
   before(:each) do
     if defined?(cookbook)
-      contributor.allow_contributions_to(cookbook.id)
-      reader.allow_to_read(cookbook.id)
+      contributor.allow_contributions_to(cookbook)
+      reader.allow_to_read(cookbook)
     end
   end
 

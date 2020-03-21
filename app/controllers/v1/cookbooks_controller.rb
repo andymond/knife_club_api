@@ -20,6 +20,12 @@ class V1::CookbooksController < ApplicationController
     render json: cookbook
   end
 
+  def destroy
+    cookbook = Cookbook.find_by(id: params[:id])
+    authorize cookbook
+    render json: cookbook
+  end
+
   private
     def cookbook_params
       params.permit(:name, :public)
