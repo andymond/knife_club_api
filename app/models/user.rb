@@ -64,12 +64,13 @@ class User < ApplicationRecord
     role ? true : false
   end
 
-  def allow_contributions_to(record)
-    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.contributor)
-  end
-
   def allow_to_read(record)
     send(record.role_set).find_or_create_by(record.role_key => record, role: Role.reader)
+  end
+
+  def allow_contributions_to(record)
+    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.reader)
+    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.contributor)
   end
 
   def grant_all_access(record)
