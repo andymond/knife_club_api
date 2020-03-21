@@ -6,7 +6,7 @@ describe V1::RecipesController, type: :controller do
   let(:reader) { create(:user) }
   let(:rando) { create(:user) }
   let(:cookbook) { create(:cookbook) }
-  let(:recipe) { create(:recipe, public: false, section: cookbook.general_section) }
+  let(:recipe) { create(:recipe, section: cookbook.general_section) }
 
   before do
     allow_any_instance_of(ApplicationController).to receive(:authenticate).and_return(true)
@@ -14,7 +14,7 @@ describe V1::RecipesController, type: :controller do
     owner.grant_all_access(recipe)
     contributor.allow_contributions_to(cookbook)
     contributor.allow_contributions_to(recipe)
-    reader.allow_to_read(recipe)
+    reader.allow_to_read(cookbook)
   end
 
   context "user owns cookbook" do
@@ -33,16 +33,16 @@ describe V1::RecipesController, type: :controller do
         expect(result[:name]).to eq("Create Recipe")
       end
 
-      xit "can #show" do
-        get :show, params: { cookbook_id: cookbook.id }
+      it "can #show" do
+        get :show, params: { cookbook_id: cookbook.id, id: recipe.id }
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(cookbook.id)
+        expect(payload[:id]).to eq(recipe.id)
       end
 
       xit "#can update" do
-        put :update, params: { id: cookbook.id, name: "Updated Name" }
+        put :update, params: { cookbook_id: cookbook.id, id: recipe.id, name: "Updated Name" }
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
@@ -80,12 +80,12 @@ describe V1::RecipesController, type: :controller do
         expect(owner.owns?(created_recipe)).to eq(true)
       end
 
-      xit "can #show" do
-        get :show, params: { id: cookbook.id }
+      it "can #show" do
+        get :show, params: { cookbook_id: cookbook.id, id: recipe.id }
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(cookbook.id)
+        expect(payload[:id]).to eq(recipe.id)
       end
 
       xit "#can update" do
@@ -121,12 +121,12 @@ describe V1::RecipesController, type: :controller do
         expect(response).to have_http_status(404)
       end
 
-      xit "can #show" do
-        get :show, params: { id: cookbook.id }
+      it "can #show" do
+        get :show, params: { cookbook_id: cookbook.id, id: recipe.id }
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(cookbook.id)
+        expect(payload[:id]).to eq(recipe.id)
       end
 
       xit "#can not update" do
@@ -160,8 +160,39 @@ describe V1::RecipesController, type: :controller do
         expect(response).to have_http_status(404)
       end
 
-      xit "can not #show" do
-        get :show, params: { id: cookbook.id }
+      it "can not #show" do
+        get :show, params: { cookbook_id: cookbook.id, id: recipe.id }
+
+        expect(response).to have_http_status(404)
+      end
+
+      xit "#can not update" do
+        put :update, params: { id: cookbook.id, name: "Updated Name" }
+
+        expect(response).to have_http_status(404)
+      end
+
+      xit "can not #destroy" do
+        delete :destroy, params: { id: cookbook.id }
+
+        expect(response).to have_http_status(404)
+        expect(cookbook.reload.persisted?).to eq(true)
+      end
+    end
+
+    context "cookbook is public" do
+      before { allow(cookbook).to receive(:public).and_return(true) }
+      let(:create_request) { post :create, params: { cookbook_id: cookbook.id, name: "Create Recipe" } }
+
+      it { expect{ create_request }.not_to change{ Recipe.count } }
+      it "can not #create" do
+        create_request
+
+        expect(response).to have_http_status(404)
+      end
+
+      it "can not #show" do
+        get :show, params: { cookbook_id: cookbook.id, id: recipe.id }
 
         expect(response).to have_http_status(404)
       end

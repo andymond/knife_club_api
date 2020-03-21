@@ -7,8 +7,8 @@ Rails.application.routes.draw do
     put "password_resets", to: "password_resets#update", as: :update_password
     get "password_resets/edit/:id", to: "password_resets#edit"
 
-    resources :cookbooks do
-      resources :recipes, only: %i(create)
+    resources :cookbooks, only: %i(create show update destroy) do
+      resources :recipes, only: %i(create show)
     end
   end
 end

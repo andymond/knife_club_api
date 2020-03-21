@@ -174,7 +174,7 @@ ALTER SEQUENCE public.recipe_ingredients_id_seq OWNED BY public.recipe_ingredien
 CREATE TABLE public.recipes (
     id bigint NOT NULL,
     name character varying NOT NULL,
-    public boolean DEFAULT false,
+    public boolean DEFAULT true,
     section_id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -809,6 +809,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190526190208'),
 ('20190526191944'),
 ('20200321005105'),
-('20200321042604');
+('20200321042604'),
+('20200321182651');
 
 

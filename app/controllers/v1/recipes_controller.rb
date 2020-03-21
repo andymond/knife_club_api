@@ -1,15 +1,21 @@
 class V1::RecipesController < ApplicationController
-  before_action :authorize_cookbook #skip for show
+  before_action :authorize_cookbook_update, except: %i(show)
+  before_action :authorize_cookbook_view, only: %i(show)
 
   def create
     recipe = current_user.create_permission_record(Recipe, recipe_params)
     if recipe.persisted?
       cookbook.owners.each { |ou| ou.grant_all_access(recipe) }
-      cookbook.contributors.each { |cu| cu.allow_to_read(recipe) }
       render json: recipe, status: 201
     else
       creation_failed(recipe)
     end
+  end
+
+  def show
+    recipe = Recipe.find(params[:id])
+    authorize recipe
+    render json: recipe
   end
 
   private
@@ -21,8 +27,13 @@ class V1::RecipesController < ApplicationController
       attrs
     end
 
-    def authorize_cookbook
+    def authorize_cookbook_update
       @cookbook = Cookbook.find(params[:cookbook_id])
       authorize cookbook, :update?
+    end
+
+    def authorize_cookbook_view
+      @cookbook = Cookbook.find(params[:cookbook_id])
+      authorize cookbook, :show?
     end
 end
