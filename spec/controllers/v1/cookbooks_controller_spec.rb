@@ -174,27 +174,27 @@ describe V1::CookbooksController, type: :controller do
     end
   end
 
-  xdescribe "#destroy" do
+  describe "#destroy" do
     let(:cookbook) { owner.create_cookbook(name: "Indian Food", public: [true, false].sample) }
-    let(:create_public_cb_request) { delete :destroy, params: { id: cookbook.id, name: "Not Indian Food" } }
+    let(:create_cb_request) { delete :destroy, params: { id: cookbook.id, name: "Not Indian Food" } }
 
     it "allows owner to delete cookbook" do
       request.headers.merge(owner_headers)
-      create_private_cb_request
+      create_cb_request
 
       expect(response).to have_http_status(200)
     end
 
     it "prevents contributors from deleting cookbook" do
       request.headers.merge(contributor_headers)
-      create_private_cb_request
+      create_cb_request
 
       expect(response).to have_http_status(404)
     end
 
     it "prevents read_only from deleting cookbook" do
       request.headers.merge(reader_headers)
-      create_private_cb_request
+      create_cb_request
 
       expect(response).to have_http_status(404)
     end
