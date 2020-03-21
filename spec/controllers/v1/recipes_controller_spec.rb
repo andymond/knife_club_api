@@ -35,11 +35,11 @@ describe V1::RecipesController, type: :controller do
     describe "valid" do
       context "owns cookbook" do
         before { request.headers.merge(owner_headers) }
-        #
-        # it { expect{ create_request }.to change { contributor.recipes.count }.by 1 }
-        # it { expect{ create_request }.to change { owner.recipes.count }.by 1 }
-        # it { expect{ create_request }.to change{ contributor.user_recipe_roles.where(role: Role.contributor).count }.by 1 }
-        # it { expect{ create_request }.to change{ owner.user_recipe_roles.where(role: Role.owner).count }.by 1 }
+
+        it { expect{ create_request }.to change { contributor.recipes.count }.by 1 }
+        it { expect{ create_request }.to change { owner.recipes.count }.by 1 }
+        it { expect{ create_request }.to change{ contributor.user_recipe_roles.where(role: Role.reader).count }.by 1 }
+        it { expect{ create_request }.to change{ owner.user_recipe_roles.where(role: Role.owner).count }.by 1 }
 
 
         it "returns serialized recipe" do

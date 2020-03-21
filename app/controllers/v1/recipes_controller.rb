@@ -4,9 +4,8 @@ class V1::RecipesController < ApplicationController
   def create
     recipe = current_user.create_recipe(recipe_params)
     if recipe.persisted?
-      cookbook.owners.each do |user|
-        user.grant_all_access(recipe)
-      end
+      cookbook.owners.each { |ou| ou.grant_all_access(recipe) }
+      cookbook.contributors.each { |cu| cu.allow_to_read(recipe) }
       render json: recipe, status: 201
     else
       creation_failed(recipe)

@@ -21,8 +21,13 @@ class Cookbook < ApplicationRecord
   after_create :add_general_section
 
   def owners
-    user_ids = user_cookbook_roles.where(role: Role.owner).distinct.pluck(:user_id)
-    users.where(id: user_ids)
+    owner_ids = user_cookbook_roles.where(role: Role.owner).distinct.pluck(:user_id)
+    users.where(id: owner_ids)
+  end
+
+  def contributors
+    contributor_ids = user_cookbook_roles.where(role: Role.contributor).distinct.pluck(:user_id)
+    users.where(id: contributor_ids)
   end
 
   def general_section
