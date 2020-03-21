@@ -49,6 +49,7 @@ class User < ApplicationRecord
   end
 
   def can_read?(record)
+    return true if record.public
     role = send(record.role_set).find_by(record.role_key => record, role: Role.reader)
     role ? true : false
   end
