@@ -15,6 +15,7 @@ describe V1::CookbooksController, type: :controller do
     contributor.allow_contributions_to(private_cookbook)
     contributor.allow_contributions_to(public_cookbook)
     reader.allow_to_read(private_cookbook)
+    reader.allow_to_read(public_cookbook)
   end
 
   context "any authd user" do
@@ -47,6 +48,14 @@ describe V1::CookbooksController, type: :controller do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(owner)
     end
 
+    it "can #index" do
+      get :index
+      payload = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(200)
+      expect(payload[:cookbooks].count).to eq(2)
+    end
+
     context "cookbook is private" do
       it "can #show" do
         get :show, params: { id: private_cookbook.id }
@@ -54,6 +63,7 @@ describe V1::CookbooksController, type: :controller do
 
         expect(response).to have_http_status(200)
         expect(payload[:cookbook][:id]).to eq(private_cookbook.id)
+        expect(payload[:cookbook][:sections].count).to eq(1)
       end
 
       it "#can update" do
@@ -79,6 +89,14 @@ describe V1::CookbooksController, type: :controller do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(contributor)
     end
 
+    it "can #index" do
+      get :index
+      payload = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(200)
+      expect(payload[:cookbooks].count).to eq(2)
+    end
+
     context "cookbook is private" do
       it "can #show" do
         get :show, params: { id: private_cookbook.id }
@@ -86,6 +104,7 @@ describe V1::CookbooksController, type: :controller do
 
         expect(response).to have_http_status(200)
         expect(payload[:cookbook][:id]).to eq(private_cookbook.id)
+        expect(payload[:cookbook][:sections].count).to eq(1)
       end
 
       it "#can update" do
@@ -111,6 +130,14 @@ describe V1::CookbooksController, type: :controller do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(reader)
     end
 
+    it "can #index" do
+      get :index
+      payload = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(200)
+      expect(payload[:cookbooks].count).to eq(2)
+    end
+
     context "cookbook is private" do
       it "can #show" do
         get :show, params: { id: private_cookbook.id }
@@ -118,6 +145,7 @@ describe V1::CookbooksController, type: :controller do
 
         expect(response).to have_http_status(200)
         expect(payload[:cookbook][:id]).to eq(private_cookbook.id)
+        expect(payload[:cookbook][:sections].count).to eq(1)
       end
 
       it "#can not update" do
@@ -139,6 +167,16 @@ describe V1::CookbooksController, type: :controller do
   context "user is not associated with cookbook," do
     before do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(rando)
+    end
+
+    describe "#index" do
+      it "no cookbooks if they dont have any" do
+        get :index
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[:cookbooks].count).to eq(0)
+      end
     end
 
     context "cookbook is private," do

@@ -14,6 +14,10 @@ class V1::CookbooksController < ApplicationController
     render json: cookbook
   end
 
+  def index
+    render json: current_user.cookbooks
+  end
+
   def update
     cookbook = Cookbook.find_by(id: params[:id])
     authorize cookbook
