@@ -19,9 +19,10 @@ describe V1::RecipesController, type: :controller do
 
   let(:random_headers) { [owner_headers, contributor_headers, reader_headers, unassoc_headers].sample }
 
-  let(:cookbook) { create(:cookbook) }
+  let(:cookbook) { owner.create_cookbook(name: "Cool Cookbook") }
 
   before(:each) do
+    contributor.allow_contributions_to(cookbook)
     if defined?(recipe)
       contributor.allow_contributions_to(recipe)
       reader.allow_to_read(recipe)
@@ -34,18 +35,19 @@ describe V1::RecipesController, type: :controller do
     describe "valid" do
       context "owns cookbook" do
         before { request.headers.merge(owner_headers) }
-
-        it { expect{ create_request }.to change { contributor.recipes.count }.by 1 }
-        it { expect{ create_request }.to change { owner.recipes.count }.by 1 }
-        it { expect{ create_request }.to change{ contributor.user_recipe_roles.where(role: Role.contributor).count }.by 1 }
-        it { expect{ create_request }.to change{ owner.user_recipe_roles.where(role: Role.owner).count }.by 1 }
+        #
+        # it { expect{ create_request }.to change { contributor.recipes.count }.by 1 }
+        # it { expect{ create_request }.to change { owner.recipes.count }.by 1 }
+        # it { expect{ create_request }.to change{ contributor.user_recipe_roles.where(role: Role.contributor).count }.by 1 }
+        # it { expect{ create_request }.to change{ owner.user_recipe_roles.where(role: Role.owner).count }.by 1 }
 
 
         it "returns serialized recipe" do
           response = create_request
-          json_response = JSON.parse(response.body, symbolize_names: true)
 
           expect(response).to have_http_status(201)
+
+          json_response = JSON.parse(response.body, symbolize_names: true)
 
           expect(json_response[:id]).to be_an(Integer)
           expect(json_response[:name]).to eq("Test Recipe")
