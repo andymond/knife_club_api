@@ -19,6 +19,13 @@ describe V1::CookbooksController, type: :controller do
 
   let(:random_headers) { [owner_headers, contributor_headers, reader_headers, unassoc_headers].sample }
 
+  before(:each) do
+    if defined?(cookbook)
+      contributor.allow_contributions_to(cookbook.id)
+      reader.allow_to_read(cookbook.id)
+    end
+  end
+
   describe "#create" do
     let(:create_request) { post :create, params: { name: "Test Cookbook" } }
     before { request.headers.merge(owner_headers) }
@@ -38,13 +45,6 @@ describe V1::CookbooksController, type: :controller do
   end
 
   describe "#show" do
-    before(:each) do
-      if defined?(cookbook)
-        contributor.allow_contributions_to(cookbook.id)
-        reader.allow_to_read(cookbook.id)
-      end
-    end
-
     context "cookbook is public" do
       let(:cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
       let(:create_public_cb_request) { get :show, params: { id: cookbook.id } }
@@ -55,6 +55,12 @@ describe V1::CookbooksController, type: :controller do
 
         expect(response).to have_http_status(200)
       end
+
+      it "doesnt allow people to update cookbook" do
+      end
+
+      it "doesnt allow people to delete cookbook" do
+      end
     end
 
     context "cookbook is private" do
@@ -63,13 +69,6 @@ describe V1::CookbooksController, type: :controller do
 
       it "allows owner to view cookbook" do
         request.headers.merge(owner_headers)
-        create_private_cb_request
-
-        expect(response).to have_http_status(200)
-      end
-
-      it "allows contributors to view cookbook" do
-        request.headers.merge(contributor_headers)
         create_private_cb_request
 
         expect(response).to have_http_status(200)
@@ -103,8 +102,8 @@ describe V1::CookbooksController, type: :controller do
 
   describe "#update" do
     context "cookbook is public" do
-      let(:public_cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
-      let(:create_public_cb_request) { put :update, params: { id: public_cookbook.id, name: "Not Indian Food" } }
+      let(:cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
+      let(:create_public_cb_request) { put :update, params: { id: cookbook.id, name: "Not Indian Food" } }
 
       it "allows owner to update cookbook" do
         request.headers.merge(owner_headers)
@@ -113,44 +112,58 @@ describe V1::CookbooksController, type: :controller do
         expect(response).to have_http_status(200)
       end
 
+      it "allows contributors to update cookbook" do
+        request.headers.merge(contributor_headers)
+        create_public_cb_request
+
+        expect(response).to have_http_status(200)
+      end
+
+      it "prevents user without permission from updating cookbook" do
+        request.headers.merge(reader_headers)
+        create_public_cb_request
+
+        expect(response).to have_http_status(404)
+      end
+
       it "prevents user without permission from updating cookbook" do
         request.headers.merge(unassoc_headers)
         create_public_cb_request
 
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(404)
       end
     end
 
     context "cookbook is private" do
-      let(:private_cookbook) { owner.create_cookbook(name: "Top Secret Sauces") }
-      let(:create_private_cb_request) { put :update, params: { id: private_cookbook.id, name: "Extra Secret Sauces" } }
+      let(:cookbook) { owner.create_cookbook(name: "Top Secret Sauces") }
+      let(:create_private_cb_request) { put :update, params: { id: cookbook.id, name: "Extra Secret Sauces" } }
 
       it "allows owner to update cookbook" do
         request.headers.merge(owner_headers)
-        create_public_cb_request
+        create_private_cb_request
 
         expect(response).to have_http_status(200)
       end
 
-      it "prevents contributors from updating cookbook" do
+      it "allows contributors to update cookbook" do
         request.headers.merge(contributor_headers)
-        create_public_cb_request
+        create_private_cb_request
 
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(200)
       end
 
       it "prevents read_only from updating cookbook" do
         request.headers.merge(reader_headers)
-        create_public_cb_request
+        create_private_cb_request
 
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(404)
       end
 
       it "prevents user without permission from updating cookbook" do
         request.headers.merge(unassoc_headers)
-        create_public_cb_request
+        create_private_cb_request
 
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(404)
       end
     end
 
@@ -158,7 +171,7 @@ describe V1::CookbooksController, type: :controller do
       before { request.headers.merge(owner_headers) }
 
       it "returns 404" do
-        get :put, params: { id: "x", name: "Cookbook that doesn't exist"}
+        put :update, params: { id: "x", name: "Cookbook that doesn't exist"}
 
         expect(response).to have_http_status(404)
       end

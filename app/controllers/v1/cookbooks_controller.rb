@@ -10,6 +10,12 @@ class V1::CookbooksController < ApplicationController
     respond_with(cookbook)
   end
 
+  def update
+    cookbook = Cookbook.find_by(id: params[:id])
+    authorize cookbook
+    respond_with(cookbook)
+  end
+
   private
     def cookbook_params
       params.permit(:name, :public)
