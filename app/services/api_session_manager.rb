@@ -20,7 +20,7 @@ class ApiSessionManager
   end
 
   def authenticate(token)
-    return false unless user
+    return false unless user&.api_session
     user.api_session.authenticate(token) ? user : false
   end
 
