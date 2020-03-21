@@ -19,7 +19,7 @@ describe V1::RecipesController, type: :controller do
 
   let(:random_headers) { [owner_headers, contributor_headers, reader_headers, unassoc_headers].sample }
 
-  let(:cookbook) { owner.create_cookbook(name: "Cool Cookbook") }
+  let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Cool Cookbook"}) }
 
   before(:each) do
     contributor.allow_contributions_to(cookbook)

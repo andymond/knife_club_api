@@ -2,7 +2,7 @@ class V1::RecipesController < ApplicationController
   before_action :authorize_cookbook #skip for show
 
   def create
-    recipe = current_user.create_recipe(recipe_params)
+    recipe = current_user.create_permission_record(Recipe, recipe_params)
     if recipe.persisted?
       cookbook.owners.each { |ou| ou.grant_all_access(recipe) }
       cookbook.contributors.each { |cu| cu.allow_to_read(recipe) }

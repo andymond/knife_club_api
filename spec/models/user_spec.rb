@@ -58,7 +58,7 @@ describe User do
 
   context "instance methods" do
     let(:owner) { create(:user) }
-    let!(:cookbook) { owner.create_cookbook(name: "Icy Delicacies") }
+    let!(:cookbook) { owner.create_permission_record(Cookbook, { name: "Icy Delicacies" }) }
 
     describe "#create_cookbook" do
       it "creates a cook book w/ proper relationship" do

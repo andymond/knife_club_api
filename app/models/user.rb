@@ -40,29 +40,13 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP
 
-  def create_cookbook(cookbook_attrs)
-    cookbook = Cookbook.create!(cookbook_attrs)
-    user_cookbook_roles.create(role: Role.owner, cookbook: cookbook)
-    user_cookbook_roles.create(role: Role.contributor, cookbook: cookbook)
-    user_cookbook_roles.create(role: Role.reader, cookbook: cookbook)
-    cookbook
+  def create_permission_record(klass, attrs)
+    record = klass.create!(attrs)
+    send(record.role_set).create(record.role_key => record, role: Role.owner)
+    send(record.role_set).create(record.role_key => record, role: Role.contributor)
+    send(record.role_set).create(record.role_key => record, role: Role.reader)
+    record
   end
-
-  def create_recipe(recipe_attrs)
-    recipe = Recipe.create!(recipe_attrs)
-    user_recipe_roles.create(role: Role.owner, recipe: recipe)
-    user_recipe_roles.create(role: Role.contributor, recipe: recipe)
-    user_recipe_roles.create(role: Role.reader, recipe: recipe)
-    recipe
-  end
-
-  # def create(klass, attrs)
-  #   record = klass.create!(attrs)
-  #   send(record.role_set).create(record.role_key => record, role: Role.owner)
-  #   send(record.role_set).create(record.role_key => record, role: Role.contributor)
-  #   send(record.role_set).create(record.role_key => record, role: Role.reader)
-  #   record
-  # end
 
   def can_read?(record)
     role = send(record.role_set).find_by(record.role_key => record, role: Role.reader)

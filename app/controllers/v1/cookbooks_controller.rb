@@ -1,6 +1,6 @@
 class V1::CookbooksController < ApplicationController
   def create
-    cookbook = current_user.create_cookbook(cookbook_params)
+    cookbook = current_user.create_permission_record(Cookbook, cookbook_params)
     if cookbook.persisted?
       render json: cookbook, status: 201
     else

@@ -48,7 +48,7 @@ describe V1::CookbooksController, type: :controller do
 
   describe "#show" do
     context "cookbook is public" do
-      let(:cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
+      let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Indian Food", public: true }) }
       let(:create_public_cb_request) { get :show, params: { id: cookbook.id } }
 
       it "allows anyone to view cookbook" do
@@ -60,7 +60,7 @@ describe V1::CookbooksController, type: :controller do
     end
 
     context "cookbook is private" do
-      let(:cookbook) { owner.create_cookbook(name: "Top Secret Sauces") }
+      let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Top Secret Sauces", public: false }) }
       let(:create_private_cb_request) { get :show, params: { id: cookbook.id } }
 
       it "allows owner to view cookbook" do
@@ -98,7 +98,7 @@ describe V1::CookbooksController, type: :controller do
 
   describe "#update" do
     context "cookbook is public" do
-      let(:cookbook) { owner.create_cookbook(name: "Indian Food", public: true) }
+      let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Recipes For Mom", public: true }) }
       let(:create_public_cb_request) { put :update, params: { id: cookbook.id, name: "Not Indian Food" } }
 
       it "allows owner to update cookbook" do
@@ -131,7 +131,7 @@ describe V1::CookbooksController, type: :controller do
     end
 
     context "cookbook is private" do
-      let(:cookbook) { owner.create_cookbook(name: "Top Secret Sauces") }
+      let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Small Restaurant Recipes", public: false }) }
       let(:create_private_cb_request) { put :update, params: { id: cookbook.id, name: "Extra Secret Sauces" } }
 
       it "allows owner to update cookbook" do
@@ -175,7 +175,7 @@ describe V1::CookbooksController, type: :controller do
   end
 
   describe "#destroy" do
-    let(:cookbook) { owner.create_cookbook(name: "Indian Food", public: [true, false].sample) }
+    let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Indian Food", public: [true, false].sample }) }
     let(:create_cb_request) { delete :destroy, params: { id: cookbook.id, name: "Not Indian Food" } }
 
     it "allows owner to delete cookbook" do
