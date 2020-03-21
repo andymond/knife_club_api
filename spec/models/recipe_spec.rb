@@ -21,6 +21,17 @@
 require "rails_helper"
 
 describe Recipe do
+  let(:recipe) { create(:recipe) }
+
+  context "concerns" do
+    context "concerns" do
+      it "is a permission record" do
+        expect(recipe.role_set).to eq(:user_recipe_roles)
+        expect(recipe.role_key).to eq(:recipe)
+      end
+    end
+  end
+
   context "relationships" do
     it { should belong_to(:section) }
     it { should have_many(:instructions) }
