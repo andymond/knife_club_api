@@ -26,9 +26,9 @@ class User < ApplicationRecord
   authenticates_with_sorcery!
 
   has_one :api_session, class_name: "UserApiSession"
-  has_many :user_roles
-  has_many :roles, through: :user_roles
-  has_many :cookbooks, -> { distinct }, through: :user_roles
+  has_many :user_cookbook_roles
+  has_many :roles, through: :user_cookbook_roles
+  has_many :cookbooks, -> { distinct }, through: :user_cookbook_roles
 
   validates :password, length: { minimum: 3 }, if: -> { new_record? || changes[:crypted_password] }
   validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }
@@ -39,31 +39,31 @@ class User < ApplicationRecord
 
   def create_cookbook(cookbook_attrs)
     cookbook = Cookbook.create(cookbook_attrs)
-    user_roles.create(role: Role.owner, cookbook: cookbook)
-    user_roles.create(role: Role.contributor, cookbook: cookbook)
-    user_roles.create(role: Role.reader, cookbook: cookbook)
+    user_cookbook_roles.create(role: Role.owner, cookbook: cookbook)
+    user_cookbook_roles.create(role: Role.contributor, cookbook: cookbook)
+    user_cookbook_roles.create(role: Role.reader, cookbook: cookbook)
     cookbook
   end
 
   def can_read?(cookbook_id)
-    any_role = user_roles.find_by(cookbook_id: cookbook_id, role: Role.reader)
+    any_role = user_cookbook_roles.find_by(cookbook_id: cookbook_id, role: Role.reader)
     any_role ? true : false
   end
 
   def can_update?(cookbook_id)
-    role = user_roles.find_by(cookbook_id: cookbook_id, role: Role.contributor)
+    role = user_cookbook_roles.find_by(cookbook_id: cookbook_id, role: Role.contributor)
     role ? true : false
   end
 
   def allow_contributions_to(cookbook_id)
-    user_roles.find_or_create_by(
+    user_cookbook_roles.find_or_create_by(
       cookbook_id: cookbook_id,
       role: Role.contributor
     )
   end
 
   def allow_to_read(cookbook_id)
-    user_roles.find_or_create_by(
+    user_cookbook_roles.find_or_create_by(
       cookbook_id: cookbook_id,
       role: Role.reader
     )

@@ -308,10 +308,10 @@ ALTER SEQUENCE public.user_api_sessions_id_seq OWNED BY public.user_api_sessions
 
 
 --
--- Name: user_roles; Type: TABLE; Schema: public; Owner: -
+-- Name: user_cookbook_roles; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.user_roles (
+CREATE TABLE public.user_cookbook_roles (
     id bigint NOT NULL,
     user_id bigint NOT NULL,
     role_id bigint NOT NULL,
@@ -322,10 +322,10 @@ CREATE TABLE public.user_roles (
 
 
 --
--- Name: user_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: user_cookbook_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.user_roles_id_seq
+CREATE SEQUENCE public.user_cookbook_roles_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -334,10 +334,10 @@ CREATE SEQUENCE public.user_roles_id_seq
 
 
 --
--- Name: user_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: user_cookbook_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.user_roles_id_seq OWNED BY public.user_roles.id;
+ALTER SEQUENCE public.user_cookbook_roles_id_seq OWNED BY public.user_cookbook_roles.id;
 
 
 --
@@ -437,10 +437,10 @@ ALTER TABLE ONLY public.user_api_sessions ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- Name: user_roles id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: user_cookbook_roles id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_roles ALTER COLUMN id SET DEFAULT nextval('public.user_roles_id_seq'::regclass);
+ALTER TABLE ONLY public.user_cookbook_roles ALTER COLUMN id SET DEFAULT nextval('public.user_cookbook_roles_id_seq'::regclass);
 
 
 --
@@ -531,11 +531,11 @@ ALTER TABLE ONLY public.user_api_sessions
 
 
 --
--- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_cookbook_roles user_cookbook_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_roles
-    ADD CONSTRAINT user_roles_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.user_cookbook_roles
+    ADD CONSTRAINT user_cookbook_roles_pkey PRIMARY KEY (id);
 
 
 --
@@ -589,24 +589,24 @@ CREATE INDEX index_user_api_sessions_on_user_id ON public.user_api_sessions USIN
 
 
 --
--- Name: index_user_roles_on_cookbook_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_user_cookbook_roles_on_cookbook_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_user_roles_on_cookbook_id ON public.user_roles USING btree (cookbook_id);
-
-
---
--- Name: index_user_roles_on_role_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_user_roles_on_role_id ON public.user_roles USING btree (role_id);
+CREATE INDEX index_user_cookbook_roles_on_cookbook_id ON public.user_cookbook_roles USING btree (cookbook_id);
 
 
 --
--- Name: index_user_roles_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_user_cookbook_roles_on_role_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_user_roles_on_user_id ON public.user_roles USING btree (user_id);
+CREATE INDEX index_user_cookbook_roles_on_role_id ON public.user_cookbook_roles USING btree (role_id);
+
+
+--
+-- Name: index_user_cookbook_roles_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_cookbook_roles_on_user_id ON public.user_cookbook_roles USING btree (user_id);
 
 
 --
@@ -640,18 +640,18 @@ ALTER TABLE ONLY public.recipe_ingredients
 
 
 --
--- Name: user_roles fk_rails_318345354e; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_cookbook_roles fk_rails_318345354e; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_roles
+ALTER TABLE ONLY public.user_cookbook_roles
     ADD CONSTRAINT fk_rails_318345354e FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
--- Name: user_roles fk_rails_3369e0d5fc; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_cookbook_roles fk_rails_3369e0d5fc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_roles
+ALTER TABLE ONLY public.user_cookbook_roles
     ADD CONSTRAINT fk_rails_3369e0d5fc FOREIGN KEY (role_id) REFERENCES public.roles(id);
 
 
@@ -672,10 +672,10 @@ ALTER TABLE ONLY public.instructions
 
 
 --
--- Name: user_roles fk_rails_72731fff34; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_cookbook_roles fk_rails_72731fff34; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.user_roles
+ALTER TABLE ONLY public.user_cookbook_roles
     ADD CONSTRAINT fk_rails_72731fff34 FOREIGN KEY (cookbook_id) REFERENCES public.cookbooks(id);
 
 
@@ -714,6 +714,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190526184934'),
 ('20190526185339'),
 ('20190526190208'),
-('20190526191944');
+('20190526191944'),
+('20200321005105');
 
 

@@ -27,7 +27,7 @@ require "rails_helper"
 describe User do
   context "relationships" do
     it { should have_one(:api_session) }
-    it { should have_many(:user_roles) }
+    it { should have_many(:user_cookbook_roles) }
     it { should have_many(:roles) }
     it { should have_many(:cookbooks) }
   end
@@ -60,7 +60,7 @@ describe User do
     describe "#create_cookbook" do
       it "creates a cook book w/ proper relationship" do
         expect(owner.cookbooks).to include(cookbook)
-        expect(owner.user_roles.where(cookbook: cookbook, role: Role.owner).count).to eq(1)
+        expect(owner.user_cookbook_roles.where(cookbook: cookbook, role: Role.owner).count).to eq(1)
       end
     end
 
@@ -97,14 +97,14 @@ describe User do
     describe "#allow_to_read(cookbook)" do
       it "grants reader role to user" do
         reader = create(:user)
-        expect{ reader.allow_to_read(cookbook.id) }.to change{ reader.user_roles.where(cookbook: cookbook, role: Role.reader ).count }.by 1
+        expect{ reader.allow_to_read(cookbook.id) }.to change{ reader.user_cookbook_roles.where(cookbook: cookbook, role: Role.reader ).count }.by 1
       end
     end
 
     describe "#allow_contributions_to(cookbook)?" do
       it "grants contribution role to user" do
         contributor = create(:user)
-        expect{ contributor.allow_contributions_to(cookbook.id) }.to change{ contributor.user_roles.where(cookbook: cookbook, role: Role.contributor).count }.by 1
+        expect{ contributor.allow_contributions_to(cookbook.id) }.to change{ contributor.user_cookbook_roles.where(cookbook: cookbook, role: Role.contributor).count }.by 1
       end
     end
   end

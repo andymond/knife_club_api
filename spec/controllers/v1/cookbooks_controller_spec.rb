@@ -31,7 +31,7 @@ describe V1::CookbooksController, type: :controller do
     before { request.headers.merge(owner_headers) }
 
     it { expect{ create_request }.to change { owner.cookbooks.count }.by 1 }
-    it { expect{ create_request }.to change{ owner.user_roles.where(role: Role.owner).count }.by 1 }
+    it { expect{ create_request }.to change{ owner.user_cookbook_roles.where(role: Role.owner).count }.by 1 }
     it { expect{ create_request }.to change { Section.count }.by 1 }
 
     it "returns serialized cookbook" do
@@ -54,12 +54,6 @@ describe V1::CookbooksController, type: :controller do
         create_public_cb_request
 
         expect(response).to have_http_status(200)
-      end
-
-      it "doesnt allow people to update cookbook" do
-      end
-
-      it "doesnt allow people to delete cookbook" do
       end
     end
 
