@@ -1,0 +1,30 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/v1/cookbooks":
+    post:
+      summary: Creates A Cookbook
+      tags:
+      - Cookbooks
+      consumes:
+      - application/json
+      parameters:
+      - name: cookbook
+        in: body
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            public:
+              type: boolean
+          required:
+          - name
+      responses:
+        '201':
+          description: Cookbook
+        '409':
+          description: Creation Failed

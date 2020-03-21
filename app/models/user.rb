@@ -41,10 +41,12 @@ class User < ApplicationRecord
   validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP
 
   def create_permission_record(klass, attrs)
-    record = klass.create!(attrs)
-    send(record.role_set).create(record.role_key => record, role: Role.owner)
-    send(record.role_set).create(record.role_key => record, role: Role.contributor)
-    send(record.role_set).create(record.role_key => record, role: Role.reader)
+    record = klass.create(attrs)
+    if record.persisted?
+      send(record.role_set).create(record.role_key => record, role: Role.owner)
+      send(record.role_set).create(record.role_key => record, role: Role.contributor)
+      send(record.role_set).create(record.role_key => record, role: Role.reader)
+    end
     record
   end
 

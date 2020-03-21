@@ -14,6 +14,7 @@ gem 'pundit'
 gem 'bcrypt', '~> 3.1.7'
 gem 'symmetric-encryption', '~> 4.1', '>= 4.1.2'
 gem 'paranoia', '~> 2.4', '>= 2.4.1'
+gem 'rswag'
 
 group :development, :test do
   gem 'dotenv-rails'
