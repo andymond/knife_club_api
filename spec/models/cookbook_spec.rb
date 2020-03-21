@@ -26,16 +26,20 @@ describe Cookbook do
     it { should have_many(:users) }
     it { should have_many(:sections) }
 
-    it "destroys its sections and recipes if destroyed" do
+    it "destroys its user roles, sections and recipes if destroyed" do
+      cool_chef = create(:user)
       doomed_cookbook = create(:cookbook)
       doomed_section = doomed_cookbook.general_section
       doomed_recipe = create(:recipe, section: doomed_section)
+      cool_chef.grant_all_access(doomed_cookbook)
 
       doomed_cookbook.destroy
+      disgraced_chef = cool_chef.reload
 
       expect { doomed_cookbook.reload }.to raise_error ActiveRecord::RecordNotFound
       expect { doomed_section.reload }.to raise_error ActiveRecord::RecordNotFound
       expect { doomed_recipe.reload }.to raise_error ActiveRecord::RecordNotFound
+      expect(disgraced_chef.user_cookbook_roles.any?).to eq(false)
      end
   end
 
