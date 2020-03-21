@@ -27,8 +27,11 @@ class User < ApplicationRecord
 
   has_one :api_session, class_name: "UserApiSession"
   has_many :user_cookbook_roles
-  has_many :roles, through: :user_cookbook_roles
+  has_many :user_recipe_roles
+  has_many :cookbook_roles, through: :user_cookbook_roles, foreign_key: :role_id, class_name: "Role"
+  has_many :recipe_roles, through: :user_recipe_roles, foreign_key: :role_id, class_name: "Role"
   has_many :cookbooks, -> { distinct }, through: :user_cookbook_roles
+  has_many :recipes, -> { distinct }, through: :user_recipe_roles
 
   validates :password, length: { minimum: 3 }, if: -> { new_record? || changes[:crypted_password] }
   validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }

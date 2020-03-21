@@ -341,6 +341,39 @@ ALTER SEQUENCE public.user_cookbook_roles_id_seq OWNED BY public.user_cookbook_r
 
 
 --
+-- Name: user_recipe_roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_recipe_roles (
+    id bigint NOT NULL,
+    user_id bigint,
+    recipe_id bigint,
+    role_id bigint,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: user_recipe_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_recipe_roles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_recipe_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.user_recipe_roles_id_seq OWNED BY public.user_recipe_roles.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -444,6 +477,13 @@ ALTER TABLE ONLY public.user_cookbook_roles ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: user_recipe_roles id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_recipe_roles ALTER COLUMN id SET DEFAULT nextval('public.user_recipe_roles_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -539,6 +579,14 @@ ALTER TABLE ONLY public.user_cookbook_roles
 
 
 --
+-- Name: user_recipe_roles user_recipe_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_recipe_roles
+    ADD CONSTRAINT user_recipe_roles_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -610,6 +658,27 @@ CREATE INDEX index_user_cookbook_roles_on_user_id ON public.user_cookbook_roles 
 
 
 --
+-- Name: index_user_recipe_roles_on_recipe_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_recipe_roles_on_recipe_id ON public.user_recipe_roles USING btree (recipe_id);
+
+
+--
+-- Name: index_user_recipe_roles_on_role_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_recipe_roles_on_role_id ON public.user_recipe_roles USING btree (role_id);
+
+
+--
+-- Name: index_user_recipe_roles_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_recipe_roles_on_user_id ON public.user_recipe_roles USING btree (user_id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -621,6 +690,14 @@ CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 --
 
 CREATE INDEX index_users_on_reset_password_token ON public.users USING btree (reset_password_token);
+
+
+--
+-- Name: user_recipe_roles fk_rails_1191524fba; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_recipe_roles
+    ADD CONSTRAINT fk_rails_1191524fba FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -664,6 +741,14 @@ ALTER TABLE ONLY public.recipes
 
 
 --
+-- Name: user_recipe_roles fk_rails_65b0934c66; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_recipe_roles
+    ADD CONSTRAINT fk_rails_65b0934c66 FOREIGN KEY (recipe_id) REFERENCES public.recipes(id);
+
+
+--
 -- Name: instructions fk_rails_70ae839088; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -696,6 +781,14 @@ ALTER TABLE ONLY public.user_api_sessions
 
 
 --
+-- Name: user_recipe_roles fk_rails_f2631a7bbc; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_recipe_roles
+    ADD CONSTRAINT fk_rails_f2631a7bbc FOREIGN KEY (role_id) REFERENCES public.roles(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -715,6 +808,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190526185339'),
 ('20190526190208'),
 ('20190526191944'),
-('20200321005105');
+('20200321005105'),
+('20200321042604');
 
 

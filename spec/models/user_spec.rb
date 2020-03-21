@@ -28,8 +28,11 @@ describe User do
   context "relationships" do
     it { should have_one(:api_session) }
     it { should have_many(:user_cookbook_roles) }
-    it { should have_many(:roles) }
+    it { should have_many(:user_recipe_roles) }
+    it { should have_many(:cookbook_roles) }
+    it { should have_many(:recipe_roles) }
     it { should have_many(:cookbooks) }
+    it { should have_many(:recipes) }
   end
 
   context "validations" do

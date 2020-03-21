@@ -19,10 +19,14 @@
 #
 
 class Recipe < ApplicationRecord
+  include PermissionRecord
+
   validates_presence_of :name
 
   belongs_to :section
   has_many :instructions
   has_many :recipe_ingredients
   has_many :ingredients, through: :recipe_ingredients
+  has_many :user_recipe_roles
+  has_many :users, through: :user_recipe_roles
 end
