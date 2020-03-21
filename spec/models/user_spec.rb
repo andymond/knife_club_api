@@ -66,12 +66,12 @@ describe User do
 
     describe "#can_read?(cookbook)" do
       it "returns true if user has any relation to private cookbook" do
-        expect(owner.can_read?(cookbook.id)).to eq(true)
+        expect(owner.can_read?(cookbook)).to eq(true)
       end
 
       it "returns false if user does not have relationship to private cookbook" do
         rando = create(:user)
-        expect(rando.can_read?(cookbook.id)).to eq(false)
+        expect(rando.can_read?(cookbook)).to eq(false)
       end
     end
 
@@ -83,14 +83,14 @@ describe User do
         reader = create(:user)
         reader.allow_to_read(cookbook.id)
 
-        expect(contributor.can_update?(cookbook.id)).to eq(true)
-        expect(owner.can_update?(cookbook.id)).to eq(true)
+        expect(contributor.can_update?(cookbook)).to eq(true)
+        expect(owner.can_update?(cookbook)).to eq(true)
       end
 
 
       it "returns false if user does not have contribute role for cookbook" do
         rando = create(:user)
-        expect(rando.can_update?(cookbook.id)).to eq(false)
+        expect(rando.can_update?(cookbook)).to eq(false)
       end
     end
 

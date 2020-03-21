@@ -45,13 +45,13 @@ class User < ApplicationRecord
     cookbook
   end
 
-  def can_read?(cookbook_id)
-    any_role = user_cookbook_roles.find_by(cookbook_id: cookbook_id, role: Role.reader)
-    any_role ? true : false
+  def can_read?(record)
+    role = send(record.role_set).find_by(record.role_key => record, role: Role.reader)
+    role ? true : false
   end
 
-  def can_update?(cookbook_id)
-    role = user_cookbook_roles.find_by(cookbook_id: cookbook_id, role: Role.contributor)
+  def can_update?(record)
+    role = send(record.role_set).find_by(record.role_key => record, role: Role.contributor)
     role ? true : false
   end
 
