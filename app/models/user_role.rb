@@ -24,6 +24,6 @@
 
 class UserRole < ApplicationRecord
   belongs_to :user
-  belongs_to :role
+  belongs_to :role, optional: true
   belongs_to :cookbook
 end
