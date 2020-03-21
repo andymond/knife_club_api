@@ -14,9 +14,9 @@ class Cookbook < ApplicationRecord
 
   validates_presence_of :name
 
-  has_many :user_cookbook_roles
+  has_many :user_cookbook_roles, dependent: :destroy
   has_many :users, through: :user_cookbook_roles
-  has_many :sections
+  has_many :sections, dependent: :destroy
 
   after_create :add_general_section
 

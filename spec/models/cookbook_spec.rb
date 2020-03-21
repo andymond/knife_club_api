@@ -25,6 +25,18 @@ describe Cookbook do
     it { should have_many(:user_cookbook_roles) }
     it { should have_many(:users) }
     it { should have_many(:sections) }
+
+    it "destroys its sections and recipes if destroyed" do
+      doomed_cookbook = create(:cookbook)
+      doomed_section = doomed_cookbook.general_section
+      doomed_recipe = create(:recipe, section: doomed_section)
+
+      doomed_cookbook.destroy
+
+      expect { doomed_cookbook.reload }.to raise_error ActiveRecord::RecordNotFound
+      expect { doomed_section.reload }.to raise_error ActiveRecord::RecordNotFound
+      expect { doomed_recipe.reload }.to raise_error ActiveRecord::RecordNotFound
+     end
   end
 
   context "validations" do
@@ -35,6 +47,7 @@ describe Cookbook do
     it "creates 'general' section on create" do
       expect{ cookbook }.to change{ Section.count }.by 1
       expect(cookbook.sections.first.name).to eq(cookbook.name + " general")
+      expect(cookbook.general_section.name).to eq(cookbook.name + " general")
     end
   end
 end
