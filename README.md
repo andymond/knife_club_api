@@ -1,24 +1,10 @@
-# README
+# Knife Club Api
+## REST Api For Social Recipe Platform!
+### Basically
+User has a cookbook
+Each cookbook has different sections 
+All your recipes are nice and organized, living in sections in your various cookbooks
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+### Collaboration & Information
+You can invite people to co-own, contribute to or just to read your cookbooks & recipes
+Got some top-secret sauces? We got you with recipe & cookbook privacy config :)
