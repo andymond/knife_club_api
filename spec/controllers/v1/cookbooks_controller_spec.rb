@@ -5,16 +5,16 @@ describe V1::CookbooksController, type: :controller do
   let(:contributor) { create(:user) }
   let(:reader) { create(:user) }
   let(:rando) { create(:user) }
+  let(:public_cookbook) { create(:cookbook, public: true) }
+  let(:private_cookbook) { create(:cookbook, public: false) }
 
   before do
     allow_any_instance_of(ApplicationController).to receive(:authenticate).and_return(true)
-  end
-
-  before(:each) do
-    if defined?(cookbook)
-      contributor.allow_contributions_to(cookbook)
-      reader.allow_to_read(cookbook)
-    end
+    owner.grant_all_access(private_cookbook)
+    owner.grant_all_access(public_cookbook)
+    contributor.allow_contributions_to(private_cookbook)
+    contributor.allow_contributions_to(public_cookbook)
+    reader.allow_to_read(private_cookbook)
   end
 
   context "any authd user" do
@@ -34,7 +34,6 @@ describe V1::CookbooksController, type: :controller do
         json_response = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(201)
-
         expect(json_response[:id]).to be_an(Integer)
         expect(json_response[:name]).to eq("Test Cookbook")
         expect(json_response[:public]).to eq(false)
@@ -42,134 +41,140 @@ describe V1::CookbooksController, type: :controller do
     end
   end
 
-
-  xdescribe "#show" do
-    context "cookbook is public" do
-      let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Indian Food", public: true }) }
-      let(:create_public_cb_request) { get :show, params: { id: cookbook.id } }
-
-      it "allows anyone to view cookbook" do
-        request.headers.merge(random_headers)
-        create_public_cb_request
-
-        expect(response).to have_http_status(200)
-      end
+  context "user owns cookbook" do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(owner)
     end
 
     context "cookbook is private" do
-      let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Top Secret Sauces", public: false }) }
-      let(:create_private_cb_request) { get :show, params: { id: cookbook.id } }
-
-      it "allows owner to view cookbook" do
-        request.headers.merge(owner_headers)
-        create_private_cb_request
+      it "can #show" do
+        get :show, params: { id: private_cookbook.id }
+        payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
+        expect(payload[:id]).to eq(private_cookbook.id)
       end
 
-      it "allows readers to view cookbook" do
-        request.headers.merge(reader_headers)
-        create_private_cb_request
+      it "#can update" do
+        put :update, params: { id: private_cookbook.id, name: "Updated Name" }
+        payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
+        expect(payload[:name]).to eq("Updated Name")
+        expect(private_cookbook.reload.name).to eq("Updated Name")
       end
 
-      it "prevents unassociated from viewing cookbook" do
-        request.headers.merge(unassoc_headers)
-        create_private_cb_request
+      it "can #destroy" do
 
-        expect(response).to have_http_status(404)
-      end
-    end
-
-    context "cookbook doesn't exist" do
-      it "returns 404" do
-        request.headers.merge(random_headers)
-
-        get :show, params: { id: "x" }
-
-        expect(response).to have_http_status(404)
       end
     end
   end
 
-  xdescribe "#update" do
-    context "cookbook is public" do
-      let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Recipes For Mom", public: true }) }
-      let(:create_public_cb_request) { put :update, params: { id: cookbook.id, name: "Not Indian Food" } }
-
-      it "allows owner to update cookbook" do
-        request.headers.merge(owner_headers)
-        create_public_cb_request
-
-        expect(response).to have_http_status(200)
-      end
-
-      it "allows contributors to update cookbook" do
-        request.headers.merge(contributor_headers)
-        create_public_cb_request
-
-        expect(response).to have_http_status(200)
-      end
-
-      it "prevents user without permission from updating cookbook" do
-        request.headers.merge(reader_headers)
-        create_public_cb_request
-
-        expect(response).to have_http_status(404)
-      end
-
-      it "prevents user without permission from updating cookbook" do
-        request.headers.merge(unassoc_headers)
-        create_public_cb_request
-
-        expect(response).to have_http_status(404)
-      end
+  context "user contributes to cookbook" do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(contributor)
     end
 
     context "cookbook is private" do
-      let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Small Restaurant Recipes", public: false }) }
-      let(:create_private_cb_request) { put :update, params: { id: cookbook.id, name: "Extra Secret Sauces" } }
-
-      it "allows owner to update cookbook" do
-        request.headers.merge(owner_headers)
-        create_private_cb_request
+      it "can #show" do
+        get :show, params: { id: private_cookbook.id }
+        payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
+        expect(payload[:id]).to eq(private_cookbook.id)
       end
 
-      it "allows contributors to update cookbook" do
-        request.headers.merge(contributor_headers)
-        create_private_cb_request
+      it "#can update" do
+        put :update, params: { id: private_cookbook.id, name: "Updated Name" }
+        payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
+        expect(payload[:name]).to eq("Updated Name")
+        expect(private_cookbook.reload.name).to eq("Updated Name")
       end
 
-      it "prevents read_only from updating cookbook" do
-        request.headers.merge(reader_headers)
-        create_private_cb_request
+      it "can not #destroy" do
 
-        expect(response).to have_http_status(404)
-      end
-
-      it "prevents user without permission from updating cookbook" do
-        request.headers.merge(unassoc_headers)
-        create_private_cb_request
-
-        expect(response).to have_http_status(404)
-      end
-    end
-
-    context "cookbook doesn't exist" do
-      before { request.headers.merge(owner_headers) }
-
-      it "returns 404" do
-        put :update, params: { id: "x", name: "Cookbook that doesn't exist"}
-
-        expect(response).to have_http_status(404)
       end
     end
   end
+
+  context "user can read cookbook" do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(reader)
+    end
+
+    context "cookbook is private" do
+      it "can #show" do
+        get :show, params: { id: private_cookbook.id }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[:id]).to eq(private_cookbook.id)
+      end
+
+      it "#can not update" do
+        put :update, params: { id: private_cookbook.id, name: "Updated Name" }
+
+        expect(response).to have_http_status(404)
+        expect(private_cookbook.reload.name).not_to eq("Updated Name")
+      end
+
+      it "can not #destroy" do
+
+      end
+    end
+  end
+
+  context "user is not associated with cookbook," do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(rando)
+    end
+
+    context "cookbook is private," do
+      it "can not #show" do
+        get :show, params: { id: private_cookbook.id }
+
+        expect(response).to have_http_status(404)
+      end
+
+      it "#can not update" do
+        put :update, params: { id: private_cookbook.id, name: "Updated Name" }
+
+        expect(response).to have_http_status(404)
+      end
+
+      it "can not #destroy" do
+
+      end
+    end
+
+    context "cookbook is public" do
+      it "can #show" do
+        get :show, params: { id: public_cookbook.id }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[:id]).to eq(public_cookbook.id)
+      end
+
+      it "#can not update" do
+        put :update, params: { id: public_cookbook.id, name: "Updated Name" }
+
+        expect(response).to have_http_status(404)
+      end
+
+      it "can not #destroy" do
+
+      end
+    end
+  end
+
+
+
+
+
+
 
   xdescribe "#destroy" do
     let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Indian Food", public: [true, false].sample }) }

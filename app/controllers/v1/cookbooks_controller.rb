@@ -17,7 +17,11 @@ class V1::CookbooksController < ApplicationController
   def update
     cookbook = Cookbook.find_by(id: params[:id])
     authorize cookbook
-    render json: cookbook
+    if cookbook.update(cookbook_params)
+      render json: cookbook
+    else
+      update_failed(cookbook)
+    end
   end
 
   def destroy

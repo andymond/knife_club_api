@@ -16,9 +16,14 @@ class ApplicationController < ActionController::API
       end
     end
 
-    def creation_failed(model)
-      errors = model&.errors&.messages
-      render json: { failure: "#{model&.class} creation failed - #{errors}" }, status: 409
+    def creation_failed(record)
+      errors = record&.errors&.messages
+      render json: { failure: "#{record&.class} creation failed - #{errors}" }, status: 409
+    end
+
+    def update_failed(record)
+      errors = record&.errors&.messages
+      render json: { failure: "#{record&.class} update failed - #{errors}" }, status: 409
     end
 
     def not_found
