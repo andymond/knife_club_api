@@ -3,7 +3,7 @@
 # Table name: users
 #
 #  id                                  :bigint(8)        not null, primary key
-#  access_count_to_reset_password_page :integer          default(0)
+#  access_count_to_reset_password_page :integer          default("0")
 #  crypted_password                    :string
 #  email                               :string           not null
 #  first_name                          :string
