@@ -60,17 +60,11 @@ class User < ApplicationRecord
     role ? true : false
   end
 
-  def allow_contributions_to(cookbook_id)
-    user_cookbook_roles.find_or_create_by(
-      cookbook_id: cookbook_id,
-      role: Role.contributor
-    )
+  def allow_contributions_to(record)
+    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.contributor)
   end
 
-  def allow_to_read(cookbook_id)
-    user_cookbook_roles.find_or_create_by(
-      cookbook_id: cookbook_id,
-      role: Role.reader
-    )
+  def allow_to_read(record)
+    send(record.role_set).find_or_create_by(record.role_key => record, role: Role.reader)
   end
 end
