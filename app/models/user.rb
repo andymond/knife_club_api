@@ -55,6 +55,11 @@ class User < ApplicationRecord
     role ? true : false
   end
 
+  def owns?(record)
+    role = send(record.role_set).find_by(record.role_key => record, role: Role.owner)
+    role ? true : false
+  end
+
   def allow_contributions_to(cookbook_id)
     user_cookbook_roles.find_or_create_by(
       cookbook_id: cookbook_id,

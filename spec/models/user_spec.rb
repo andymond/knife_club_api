@@ -94,6 +94,29 @@ describe User do
       end
     end
 
+
+    describe "#owns?(cookbook)" do
+      it "returns true if user has owner role for cookbook" do
+        expect(owner.owns?(cookbook)).to eq(true)
+      end
+
+
+      it "returns false if user does not have contribute role for cookbook" do
+        contributor = create(:user)
+        contributor.allow_contributions_to(cookbook.id)
+
+        reader = create(:user)
+        reader.allow_to_read(cookbook.id)
+
+        rando = create(:user)
+
+        expect(contributor.owns?(cookbook)).to eq(false)
+        expect(reader.owns?(cookbook)).to eq(false)
+        expect(rando.owns?(cookbook)).to eq(false)
+      end
+    end
+
+
     describe "#allow_to_read(cookbook)" do
       it "grants reader role to user" do
         reader = create(:user)
