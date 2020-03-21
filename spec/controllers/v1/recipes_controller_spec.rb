@@ -50,8 +50,8 @@ describe V1::RecipesController, type: :controller do
         expect(recipe.reload.name).to eq("Updated Name")
       end
 
-      xit "can #destroy" do
-        delete :destroy, params: { id: cookbook.id }
+      it "can #destroy" do
+        delete :destroy, params: { cookbook_id: cookbook.id, id: recipe.id }
 
         expect(response).to have_http_status(200)
         expect { recipe.reload }.to raise_error ActiveRecord::RecordNotFound
@@ -97,8 +97,8 @@ describe V1::RecipesController, type: :controller do
         expect(recipe.reload.name).to eq("Updated Name")
       end
 
-      xit "can not #destroy" do
-        delete :destroy, params: { id: cookbook.id }
+      it "can not #destroy" do
+        delete :destroy, params: { cookbook_id: cookbook.id, id: recipe.id }
 
         expect(response).to have_http_status(404)
         expect(recipe.reload.persisted?).to eq(true)
@@ -136,8 +136,8 @@ describe V1::RecipesController, type: :controller do
         expect(recipe.reload.name).not_to eq("Updated Name")
       end
 
-      xit "can not #destroy" do
-        delete :destroy, params: { id: cookbook.id }
+      it "can not #destroy" do
+        delete :destroy, params: { cookbook_id: cookbook.id, id: recipe.id }
 
         expect(response).to have_http_status(404)
         expect(recipe.reload.persisted?).to eq(true)
@@ -172,8 +172,8 @@ describe V1::RecipesController, type: :controller do
         expect(response).to have_http_status(404)
       end
 
-      xit "can not #destroy" do
-        delete :destroy, params: { id: cookbook.id }
+      it "can not #destroy" do
+        delete :destroy, params: { cookbook_id: cookbook.id, id: recipe.id }
 
         expect(response).to have_http_status(404)
         expect(recipe.reload.persisted?).to eq(true)
@@ -203,8 +203,8 @@ describe V1::RecipesController, type: :controller do
         expect(response).to have_http_status(404)
       end
 
-      xit "can not #destroy" do
-        delete :destroy, params: { id: cookbook.id }
+      it "can not #destroy" do
+        delete :destroy, params: { cookbook_id: cookbook.id, id: recipe.id }
 
         expect(response).to have_http_status(404)
         expect(recipe.reload.persisted?).to eq(true)

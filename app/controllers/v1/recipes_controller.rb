@@ -28,6 +28,16 @@ class V1::RecipesController < ApplicationController
     end
   end
 
+  def destroy
+    recipe = Recipe.find(params[:id])
+    authorize recipe
+    if recipe.destroy
+      render json: recipe
+    else
+      update_failed(recipe)
+    end
+  end
+
   private
     attr_reader :cookbook
 
