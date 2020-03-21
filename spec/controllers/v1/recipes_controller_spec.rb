@@ -1,87 +1,183 @@
 require "rails_helper"
 
 describe V1::RecipesController, type: :controller do
-  let(:owner) { create(:user, password: "opassword", password_confirmation: "opassword") }
-  let(:o_token) { ApiSessionManager.new(owner.id).try_login("opassword")[:token] }
-  let(:owner_headers) { { "User" => owner.id, "Authorization" => o_token } }
+  let(:owner) { create(:user) }
+  let(:contributor) { create(:user) }
+  let(:reader) { create(:user) }
+  let(:rando) { create(:user) }
+  let(:cookbook) { create(:cookbook) }
+  let(:recipe) { create(:recipe, public: false, section: cookbook.general_section) }
 
-  let(:contributor) { create(:user, password: "cpassword", password_confirmation: "cpassword") }
-  let(:c_token) { ApiSessionManager.new(contributor.id).try_login("cpassword")[:token] }
-  let(:contributor_headers) { { "User" => contributor.id, "Authorization" => c_token } }
-
-  let(:reader) { create(:user, password: "rpassword", password_confirmation: "rpassword") }
-  let(:r_token) { ApiSessionManager.new(reader.id).try_login("rpassword")[:token] }
-  let(:reader_headers) { { "User" => reader.id, "Authorization" => r_token } }
-
-  let(:unassociated) { create(:user, password: "upassword", password_confirmation: "upassword") }
-  let(:u_token) { ApiSessionManager.new(unassociated.id).try_login("upassword")[:token] }
-  let(:unassoc_headers) { { "User" => unassociated.id, "Authorization" => u_token } }
-
-  let(:random_headers) { [owner_headers, contributor_headers, reader_headers, unassoc_headers].sample }
-
-  let(:cookbook) { owner.create_permission_record(Cookbook, { name: "Cool Cookbook"}) }
-
-  before(:each) do
+  before do
+    allow_any_instance_of(ApplicationController).to receive(:authenticate).and_return(true)
+    owner.grant_all_access(cookbook)
+    owner.grant_all_access(recipe)
     contributor.allow_contributions_to(cookbook)
-    if defined?(recipe)
-      contributor.allow_contributions_to(recipe)
-      reader.allow_to_read(recipe)
+    contributor.allow_contributions_to(recipe)
+    reader.allow_to_read(recipe)
+  end
+
+  context "user owns cookbook" do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(owner)
+    end
+
+    context "cookbook is private or public" do
+      before { allow(recipe).to receive(:public).and_return([true, false].sample) }
+
+      it "can #create" do
+        post :create, params: { cookbook_id: cookbook.id, name: "Create Recipe" }
+        result = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(201)
+        expect(result[:name]).to eq("Create Recipe")
+      end
+
+      xit "can #show" do
+        get :show, params: { cookbook_id: cookbook.id }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[:id]).to eq(cookbook.id)
+      end
+
+      xit "#can update" do
+        put :update, params: { id: cookbook.id, name: "Updated Name" }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[:name]).to eq("Updated Name")
+        expect(cookbook.reload.name).to eq("Updated Name")
+      end
+
+      xit "can #destroy" do
+        delete :destroy, params: { id: cookbook.id }
+
+        expect(response).to have_http_status(200)
+        expect { cookbook.reload }.to raise_error ActiveRecord::RecordNotFound
+      end
     end
   end
 
-  describe "#create" do
-    let(:create_request) { post :create, params: { cookbook_id: cookbook.id, name: "Test Recipe" } }
-
-    describe "valid" do
-      context "owns cookbook" do
-        before { request.headers.merge(owner_headers) }
-
-        it { expect{ create_request }.to change { contributor.recipes.count }.by 1 }
-        it { expect{ create_request }.to change { owner.recipes.count }.by 1 }
-        it { expect{ create_request }.to change{ contributor.user_recipe_roles.where(role: Role.reader).count }.by 1 }
-        it { expect{ create_request }.to change{ owner.user_recipe_roles.where(role: Role.owner).count }.by 1 }
-
-
-        it "returns serialized recipe" do
-          response = create_request
-
-          expect(response).to have_http_status(201)
-
-          json_response = JSON.parse(response.body, symbolize_names: true)
-
-          expect(json_response[:id]).to be_an(Integer)
-          expect(json_response[:name]).to eq("Test Recipe")
-          expect(json_response[:public]).to eq(false)
-        end
-      end
-
-      xcontext "contributes to cookbook" do
-        before { request.headers.merge(contributor_headers) }
-
-        it { expect{ create_request }.to change { contributor.recipes.count }.by 1 }
-        it { expect{ create_request }.to change { owner.recipes.count }.by 1 }
-        it { expect{ create_request }.to change{ contributor.user_recipe_roles.where(role: Role.owner).count }.by 1 }
-        it { expect{ create_request }.to change{ owner.user_recipe_roles.where(role: Role.owner).count }.by 1 }
-
-        it "returns serialized recipe" do
-          response = create_request
-          json_response = JSON.parse(response.body, symbolize_names: true)
-
-          expect(response).to have_http_status(201)
-
-          expect(json_response[:id]).to be_an(Integer)
-          expect(json_response[:name]).to eq("Test Recipe")
-          expect(json_response[:public]).to eq(false)
-        end
-      end
+  context "user contributes to cookbook" do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(contributor)
     end
 
-    xdescribe "invalid" do
-      before { request.headers.merge(unassoc_headers) }
+    context "cookbook is private or public" do
+      before { allow(recipe).to receive(:public).and_return([true, false].sample) }
 
-      it { expect{ create_request }.to change { owner.recipes.count }.by 0 }
-      it { expect{ create_request }.to change{ owner.user_recipe_roles.where(role: Role.owner).count }.by 0 }
-      it { expect{ create_request }.to have_http_status(404) }
+      it "can #create" do
+        post :create, params: { cookbook_id: cookbook.id, name: "Create Recipe" }
+        result = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(201)
+        expect(result[:name]).to eq("Create Recipe")
+
+        created_recipe = Recipe.find(result[:id])
+
+        expect(contributor.owns?(created_recipe)).to eq(true)
+        expect(owner.owns?(created_recipe)).to eq(true)
+      end
+
+      xit "can #show" do
+        get :show, params: { id: cookbook.id }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[:id]).to eq(cookbook.id)
+      end
+
+      xit "#can update" do
+        put :update, params: { id: cookbook.id, name: "Updated Name" }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[:name]).to eq("Updated Name")
+        expect(cookbook.reload.name).to eq("Updated Name")
+      end
+
+      xit "can not #destroy" do
+        delete :destroy, params: { id: cookbook.id }
+
+        expect(response).to have_http_status(404)
+        expect(cookbook.reload.persisted?).to eq(true)
+      end
+    end
+  end
+
+  context "user can read cookbook" do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(reader)
+    end
+
+    context "cookbook is private" do
+      let(:create_request) { post :create, params: { cookbook_id: cookbook.id, name: "Create Recipe" } }
+
+      it { expect{ create_request }.not_to change{ Recipe.count } }
+      it "can not #create" do
+        create_request
+
+        expect(response).to have_http_status(404)
+      end
+
+      xit "can #show" do
+        get :show, params: { id: cookbook.id }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[:id]).to eq(cookbook.id)
+      end
+
+      xit "#can not update" do
+        put :update, params: { id: cookbook.id, name: "Updated Name" }
+
+        expect(response).to have_http_status(404)
+        expect(cookbook.reload.name).not_to eq("Updated Name")
+      end
+
+      xit "can not #destroy" do
+        delete :destroy, params: { id: cookbook.id }
+
+        expect(response).to have_http_status(404)
+        expect(cookbook.reload.persisted?).to eq(true)
+      end
+    end
+  end
+
+  context "user is not associated with cookbook," do
+    before do
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(rando)
+    end
+
+    context "cookbook is private" do
+      let(:create_request) { post :create, params: { cookbook_id: cookbook.id, name: "Create Recipe" } }
+
+      it { expect{ create_request }.not_to change{ Recipe.count } }
+      it "can not #create" do
+        create_request
+
+        expect(response).to have_http_status(404)
+      end
+
+      xit "can not #show" do
+        get :show, params: { id: cookbook.id }
+
+        expect(response).to have_http_status(404)
+      end
+
+      xit "#can not update" do
+        put :update, params: { id: cookbook.id, name: "Updated Name" }
+
+        expect(response).to have_http_status(404)
+      end
+
+      xit "can not #destroy" do
+        delete :destroy, params: { id: cookbook.id }
+
+        expect(response).to have_http_status(404)
+        expect(cookbook.reload.persisted?).to eq(true)
+      end
     end
   end
 end
