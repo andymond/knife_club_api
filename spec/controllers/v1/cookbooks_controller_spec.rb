@@ -34,10 +34,10 @@ describe V1::CookbooksController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(201)
-        expect(payload[:id]).to be_an(Integer)
-        expect(payload[:name]).to eq("Test Cookbook")
-        expect(payload[:public]).to eq(false)
-        expect(payload[:sections].count).to eq(1)
+        expect(payload[:cookbook][:id]).to be_an(Integer)
+        expect(payload[:cookbook][:name]).to eq("Test Cookbook")
+        expect(payload[:cookbook][:public]).to eq(false)
+        expect(payload[:cookbook][:sections].count).to eq(1)
       end
     end
   end
@@ -53,7 +53,7 @@ describe V1::CookbooksController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(private_cookbook.id)
+        expect(payload[:cookbook][:id]).to eq(private_cookbook.id)
       end
 
       it "#can update" do
@@ -61,7 +61,7 @@ describe V1::CookbooksController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:name]).to eq("Updated Name")
+        expect(payload[:cookbook][:name]).to eq("Updated Name")
         expect(private_cookbook.reload.name).to eq("Updated Name")
       end
 
@@ -85,7 +85,7 @@ describe V1::CookbooksController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(private_cookbook.id)
+        expect(payload[:cookbook][:id]).to eq(private_cookbook.id)
       end
 
       it "#can update" do
@@ -93,7 +93,7 @@ describe V1::CookbooksController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:name]).to eq("Updated Name")
+        expect(payload[:cookbook][:name]).to eq("Updated Name")
         expect(private_cookbook.reload.name).to eq("Updated Name")
       end
 
@@ -117,7 +117,7 @@ describe V1::CookbooksController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(private_cookbook.id)
+        expect(payload[:cookbook][:id]).to eq(private_cookbook.id)
       end
 
       it "#can not update" do
@@ -168,7 +168,7 @@ describe V1::CookbooksController, type: :controller do
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
-        expect(payload[:id]).to eq(public_cookbook.id)
+        expect(payload[:cookbook][:id]).to eq(public_cookbook.id)
       end
 
       it "#can not update" do
