@@ -17,6 +17,7 @@ class Cookbook < ApplicationRecord
   has_many :user_cookbook_roles, dependent: :destroy
   has_many :users, through: :user_cookbook_roles
   has_many :sections, dependent: :destroy
+  has_many :recipes, through: :sections
 
   after_create :add_general_section
 

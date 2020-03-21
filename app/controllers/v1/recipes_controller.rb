@@ -1,6 +1,6 @@
 class V1::RecipesController < ApplicationController
   before_action :authorize_cookbook_update, except: %i(show)
-  before_action :authorize_cookbook_view, only: %i(show)
+  before_action :authorize_cookbook_view, only: %i(index show)
 
   def create
     recipe = current_user.create_permission_record(Recipe, recipe_params)
@@ -16,6 +16,14 @@ class V1::RecipesController < ApplicationController
     recipe = Recipe.find(params[:id])
     authorize recipe
     render json: recipe
+  end
+
+  def index
+    check_roles = "SELECT DISTINCT urr.id FROM user_recipe_roles urr WHERE urr.user_id = ?"
+    has_permission = "recipes.public = true OR recipes.id IN (#{check_roles})"
+    section_recipes = cookbook.sections.find(params[:section_id]).recipes
+    recipes = section_recipes.where(has_permission, current_user.id)
+    render json: recipes
   end
 
   def update

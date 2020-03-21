@@ -41,6 +41,14 @@ describe V1::RecipesController, type: :controller do
         expect(payload[:id]).to eq(recipe.id)
       end
 
+      it "can #index" do
+        get :index, params: { cookbook_id: cookbook.id, section_id: cookbook.general_section.id }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(200)
+        expect(payload[0][:id]).to eq(recipe.id)
+      end
+
       it "#can update" do
         put :update, params: { cookbook_id: cookbook.id, id: recipe.id, name: "Updated Name" }
         payload = JSON.parse(response.body, symbolize_names: true)

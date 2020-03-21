@@ -31,12 +31,13 @@ describe V1::CookbooksController, type: :controller do
 
       it "returns serialized cookbook" do
         response = create_request
-        json_response = JSON.parse(response.body, symbolize_names: true)
+        payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(201)
-        expect(json_response[:id]).to be_an(Integer)
-        expect(json_response[:name]).to eq("Test Cookbook")
-        expect(json_response[:public]).to eq(false)
+        expect(payload[:id]).to be_an(Integer)
+        expect(payload[:name]).to eq("Test Cookbook")
+        expect(payload[:public]).to eq(false)
+        expect(payload[:sections].count).to eq(1)
       end
     end
   end

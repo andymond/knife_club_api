@@ -11,4 +11,6 @@
 
 class CookbookSerializer < ActiveModel::Serializer
   attributes :id, :name, :public
+
+  has_many :sections
 end
