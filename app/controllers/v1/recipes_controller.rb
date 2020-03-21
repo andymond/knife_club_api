@@ -18,6 +18,16 @@ class V1::RecipesController < ApplicationController
     render json: recipe
   end
 
+  def update
+    recipe = Recipe.find(params[:id])
+    authorize recipe
+    if recipe.update(recipe_params)
+      render json: recipe
+    else
+      update_failed(recipe)
+    end
+  end
+
   private
     attr_reader :cookbook
 

@@ -41,20 +41,20 @@ describe V1::RecipesController, type: :controller do
         expect(payload[:id]).to eq(recipe.id)
       end
 
-      xit "#can update" do
+      it "#can update" do
         put :update, params: { cookbook_id: cookbook.id, id: recipe.id, name: "Updated Name" }
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
         expect(payload[:name]).to eq("Updated Name")
-        expect(cookbook.reload.name).to eq("Updated Name")
+        expect(recipe.reload.name).to eq("Updated Name")
       end
 
       xit "can #destroy" do
         delete :destroy, params: { id: cookbook.id }
 
         expect(response).to have_http_status(200)
-        expect { cookbook.reload }.to raise_error ActiveRecord::RecordNotFound
+        expect { recipe.reload }.to raise_error ActiveRecord::RecordNotFound
       end
     end
   end
@@ -88,20 +88,20 @@ describe V1::RecipesController, type: :controller do
         expect(payload[:id]).to eq(recipe.id)
       end
 
-      xit "#can update" do
-        put :update, params: { id: cookbook.id, name: "Updated Name" }
+      it "#can update" do
+        put :update, params: { cookbook_id: cookbook.id, id: recipe.id, name: "Updated Name" }
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(200)
         expect(payload[:name]).to eq("Updated Name")
-        expect(cookbook.reload.name).to eq("Updated Name")
+        expect(recipe.reload.name).to eq("Updated Name")
       end
 
       xit "can not #destroy" do
         delete :destroy, params: { id: cookbook.id }
 
         expect(response).to have_http_status(404)
-        expect(cookbook.reload.persisted?).to eq(true)
+        expect(recipe.reload.persisted?).to eq(true)
       end
     end
   end
@@ -129,18 +129,18 @@ describe V1::RecipesController, type: :controller do
         expect(payload[:id]).to eq(recipe.id)
       end
 
-      xit "#can not update" do
-        put :update, params: { id: cookbook.id, name: "Updated Name" }
+      it "#can not update" do
+        put :update, params: { cookbook_id: cookbook.id, id: recipe.id, name: "Updated Name" }
 
         expect(response).to have_http_status(404)
-        expect(cookbook.reload.name).not_to eq("Updated Name")
+        expect(recipe.reload.name).not_to eq("Updated Name")
       end
 
       xit "can not #destroy" do
         delete :destroy, params: { id: cookbook.id }
 
         expect(response).to have_http_status(404)
-        expect(cookbook.reload.persisted?).to eq(true)
+        expect(recipe.reload.persisted?).to eq(true)
       end
     end
   end
@@ -166,8 +166,8 @@ describe V1::RecipesController, type: :controller do
         expect(response).to have_http_status(404)
       end
 
-      xit "#can not update" do
-        put :update, params: { id: cookbook.id, name: "Updated Name" }
+      it "#can not update" do
+        put :update, params: { cookbook_id: cookbook.id, id: recipe.id, name: "Updated Name" }
 
         expect(response).to have_http_status(404)
       end
@@ -176,7 +176,7 @@ describe V1::RecipesController, type: :controller do
         delete :destroy, params: { id: cookbook.id }
 
         expect(response).to have_http_status(404)
-        expect(cookbook.reload.persisted?).to eq(true)
+        expect(recipe.reload.persisted?).to eq(true)
       end
     end
 
@@ -197,8 +197,8 @@ describe V1::RecipesController, type: :controller do
         expect(response).to have_http_status(404)
       end
 
-      xit "#can not update" do
-        put :update, params: { id: cookbook.id, name: "Updated Name" }
+      it "#can not update" do
+        put :update, params: { cookbook_id: cookbook.id, id: recipe.id, name: "Updated Name" }
 
         expect(response).to have_http_status(404)
       end
@@ -207,7 +207,7 @@ describe V1::RecipesController, type: :controller do
         delete :destroy, params: { id: cookbook.id }
 
         expect(response).to have_http_status(404)
-        expect(cookbook.reload.persisted?).to eq(true)
+        expect(recipe.reload.persisted?).to eq(true)
       end
     end
   end
