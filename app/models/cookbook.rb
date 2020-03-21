@@ -10,6 +10,8 @@
 #
 
 class Cookbook < ApplicationRecord
+  include PermissionRecord
+
   validates_presence_of :name
 
   has_many :user_cookbook_roles
