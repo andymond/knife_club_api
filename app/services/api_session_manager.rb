@@ -40,7 +40,7 @@ class ApiSessionManager
       return invalid_attempt unless user
       return locked_out_message if session&.locked_out
       case attempts
-      when 1..4
+      when 0..4
         count_failure
       when 5
         lock_user_out
@@ -82,22 +82,22 @@ class ApiSessionManager
 
 
     def successful_attempt
-      { status: 200, token: token }
+      { status: 201, token: token }
     end
 
     def logout_message
-      { status: 200, message: "Logged user out." }
+      { status: 200, msg: "Logged user out." }
     end
 
     def invalid_attempt
-      { status: 401, message: "Invalid Credentials" }
+      { status: 401, msg: "Invalid Credentials" }
     end
 
     def countdown_message
-      { status: 401, message: "#{6 - attempts} Login Attempts Remain" }
+      { status: 401, msg: "#{6 - attempts} Login Attempts Remain" }
     end
 
     def locked_out_message
-      { status: 403, message: "No more login attempts, please try again later." }
+      { status: 403, msg: "No more login attempts, please try again later." }
     end
 end

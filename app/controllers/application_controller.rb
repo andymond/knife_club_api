@@ -15,17 +15,6 @@ class ApplicationController < ActionController::API
         render json: { errors: "Invalid Credential" }, status: 401
       end
     end
-
-    def creation_failed(record)
-      errors = record&.errors&.messages
-      render json: { failure: "#{record&.class} creation failed - #{errors}" }, status: 409
-    end
-
-    def update_failed(record)
-      errors = record&.errors&.messages
-      render json: { failure: "#{record&.class} update failed - #{errors}" }, status: 409
-    end
-
     def not_found
       head 404
     end

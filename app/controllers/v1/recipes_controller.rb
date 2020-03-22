@@ -8,12 +8,12 @@ class V1::RecipesController < ApplicationController
       cookbook.owners.each { |ou| ou.grant_all_access(recipe) }
       render json: recipe, status: 201
     else
-      creation_failed(recipe)
+      render json: { msg: "Create Failed" }, status: 409
     end
   end
 
   def show
-    recipe = Recipe.find(params[:id])
+    recipe = Recipe.find_by(id: params[:id])
     authorize recipe
     render json: recipe
   end
@@ -27,7 +27,7 @@ class V1::RecipesController < ApplicationController
   end
 
   def update
-    recipe = Recipe.find(params[:id])
+    recipe = Recipe.find_by(id: params[:id])
     authorize recipe
     if recipe.update(recipe_params)
       render json: recipe
@@ -37,7 +37,7 @@ class V1::RecipesController < ApplicationController
   end
 
   def destroy
-    recipe = Recipe.find(params[:id])
+    recipe = Recipe.find_by(id: params[:id])
     authorize recipe
     if recipe.destroy
       render json: recipe

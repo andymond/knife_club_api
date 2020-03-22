@@ -15,7 +15,7 @@ describe ApiSessionManager do
           expect(user.api_session.api_token_last_verified).to be_an_instance_of(ActiveSupport::TimeWithZone)
           expect(user.api_session.failed_login_count).to eq(0)
           expect(user.api_session.lock_expires_at).to be(nil)
-          expect(result[:status]).to eq(200)
+          expect(result[:status]).to eq(201)
           expect(BCrypt::Password.new(user.api_session.api_token_digest)).to eq(result[:token])
         end
       end
@@ -29,7 +29,7 @@ describe ApiSessionManager do
           expect(user.api_session.failed_login_count).to eq(1)
           expect(user.api_session.lock_expires_at).to be(nil)
           expect(result[:status]).to eq(401)
-          expect(result[:message]).to eq("Invalid Credentials")
+          expect(result[:msg]).to eq("Invalid Credentials")
         end
       end
 
@@ -44,11 +44,11 @@ describe ApiSessionManager do
           expect(user.api_session.failed_login_count).to eq(4)
           expect(user.api_session.lock_expires_at).to be(nil)
           expect(result[:status]).to eq(401)
-          expect(result[:message]).to eq("2 Login Attempts Remain")
+          expect(result[:msg]).to eq("2 Login Attempts Remain")
 
           result = subject.try_login("One last time")
 
-          expect(result[:message]).to eq("1 Login Attempts Remain")
+          expect(result[:msg]).to eq("1 Login Attempts Remain")
         end
       end
 
@@ -63,7 +63,7 @@ describe ApiSessionManager do
           expect(user.api_session.failed_login_count).to eq(6)
           expect(user.api_session.lock_expires_at).to be_an_instance_of(ActiveSupport::TimeWithZone)
           expect(result[:status]).to eq(403)
-          expect(result[:message]).to eq("No more login attempts, please try again later.")
+          expect(result[:msg]).to eq("No more login attempts, please try again later.")
         end
 
         it "allows user to try log in after 15 minutes" do
@@ -75,7 +75,7 @@ describe ApiSessionManager do
           Timecop.travel(15.minutes.from_now)
 
           expect(user.api_session.locked_out).to eq(false)
-          expect(subject.try_login(password)[:status]).to eq(200)
+          expect(subject.try_login(password)[:status]).to eq(201)
 
           Timecop.return
         end
@@ -95,7 +95,7 @@ describe ApiSessionManager do
         expect(user.api_session.failed_login_count).to eq(0)
         expect(user.api_session.lock_expires_at).to be(nil)
         expect(result[:status]).to eq(200)
-        expect(result[:message]).to eq("Logged user out.")
+        expect(result[:msg]).to eq("Logged user out.")
       end
     end
 
