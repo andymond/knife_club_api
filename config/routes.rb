@@ -11,7 +11,7 @@ Rails.application.routes.draw do
 
     resources :cookbooks, only: %i(create show index update destroy) do
       resources :recipes, only: %i(create show index update destroy)
-      resources :sections, only: %i(create)
+      resources :sections, only: %i(create update)
     end
   end
 end

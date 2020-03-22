@@ -20,23 +20,21 @@
 
 class Section < ApplicationRecord
   validates_presence_of :name
+  validates_uniqueness_of :general, scope: :cookbook_id, if: :general?
+  validate :check_not_general, if: :name_changed?, on: :update
 
   belongs_to :cookbook
   has_many :recipes, dependent: :destroy
 
-  validates_uniqueness_of :general, scope: :cookbook_id, if: :general?
-
-  before_update :validate_not_general, if: :name_changed?
-  before_destroy :validate_not_general
+  before_destroy :check_not_general
 
   scope :alphabetized, -> { order(:name) }
 
   private
 
-    def validate_not_general
+    def check_not_general
       if general
-        errors[:base] << "Cannot Modify General Section"
-        return false
+        errors.add(:name, "Cannot Modify General Section")
       end
     end
 end
