@@ -33,6 +33,12 @@ RSpec.configure do |config|
         }
       },
       definitions: {
+        msg: {
+          type: :object,
+          properties: {
+            msg: { type: :string }
+          }
+        },
         cookbook_list: {
           type: :object,
             properties: {
@@ -65,6 +71,15 @@ RSpec.configure do |config|
             sections: { type: :array },
             name: { type: :string },
             id: { type: :integer }
+          }
+        },
+        user: {
+          type: :object,
+          properties: {
+            first_name: { type: :string },
+            last_name: { type: :string },
+            email: { type: :string },
+            phone_number: { type: :string },
           }
         }
       },

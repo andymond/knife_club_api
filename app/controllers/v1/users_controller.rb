@@ -3,7 +3,11 @@ class V1::UsersController < ApplicationController
 
   def create
     user = User.new(user_params)
-    user.save ? created(user) : creation_failed(user)
+    if user.save
+      created(user)
+    else
+      render json: { msg: "Create Failed" }, status: 409
+    end
   end
 
   private
@@ -13,6 +17,6 @@ class V1::UsersController < ApplicationController
     end
 
     def created(user)
-      render json: { success: user.id }, status: 201
+      render json: { user: user.id, msg: "Created Account" }, status: 201
     end
 end

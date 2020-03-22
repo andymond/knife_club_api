@@ -15,7 +15,10 @@ describe V1::UsersController do
       before { post :create, params: { user: valid_user_params } }
 
       it { expect(response).to have_http_status(201) }
-      it { expect(JSON.parse(response.body)).to eq({ "success" => User.last.id }) }
+      it { expect(JSON.parse(response.body)).to eq({
+        "user" => User.last.id,
+        "msg"  => "Created Account"
+      }) }
     end
 
     context "invalid user registration credentials" do
@@ -25,7 +28,7 @@ describe V1::UsersController do
       it "Sends failure with error" do
         json_response = JSON.parse(response.body, symbolize_names: true)
 
-        expect(json_response[:failure]).to include("User creation failed")
+        expect(json_response[:msg]).to include("Create Failed")
       end
     end
   end

@@ -8,7 +8,7 @@ class V1::RecipesController < ApplicationController
       cookbook.owners.each { |ou| ou.grant_all_access(recipe) }
       render json: recipe, status: 201
     else
-      creation_failed(recipe)
+      render json: { msg: "Create Failed" }, status: 409
     end
   end
 

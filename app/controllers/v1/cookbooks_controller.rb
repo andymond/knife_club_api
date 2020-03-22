@@ -4,7 +4,7 @@ class V1::CookbooksController < ApplicationController
     if cookbook.persisted?
       render json: cookbook, status: 201
     else
-      creation_failed(cookbook)
+      render json: { msg: "Create Failed" }, status: 409
     end
   end
 
@@ -24,7 +24,7 @@ class V1::CookbooksController < ApplicationController
     if cookbook.update(cookbook_params)
       render json: cookbook
     else
-      update_failed(cookbook)
+      render json: { msg: "Update Failed" }, status: 409
     end
   end
 
@@ -34,7 +34,7 @@ class V1::CookbooksController < ApplicationController
     if cookbook.destroy
       render json: cookbook
     else
-      update_failed(cookbook)
+      render json: { msg: "Update Failed" }, status: 409
     end
   end
 
