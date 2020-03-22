@@ -3,6 +3,7 @@ require "swagger_helper"
 describe "Sessions API" do
   path "/v1/sessions" do
     let!(:user) { create(:user, password: "1!Password", password_confirmation: "1!Password") }
+
     post "Log User In" do
       tags 'Sessions'
       consumes "application/json"
@@ -23,7 +24,7 @@ describe "Sessions API" do
             token: { type: :string }
           }
         }
-        examples "$ref" => "#/definitions/login"
+        examples login: { token: "1234567890" }
 
         run_test!
       end
@@ -51,8 +52,27 @@ describe "Sessions API" do
 
     delete "Log User Out" do
       tags 'Sessions'
+      security [ { api_key: [] }, { user_id: [] } ]
       consumes "application/json"
       produces "application/json"
+
+      response "200", "Logged User Out" do
+        let(:token) { ApiSessionManager.new(user.id).try_login("1!Password" )[:token] }
+        let(:User) { user.id }
+        let(:Authorization) { token }
+        before { allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user) }
+        schema "$ref" => "#/definitions/msg"
+        examples "$ref" => "#/definitions/msg"
+
+        run_test!
+      end
+
+      response "401", "Logout Failed" do
+        schema "$ref" => "#/definitions/msg"
+        examples "$ref" => "#/definitions/msg"
+
+        run_test!
+      end
 
     end
   end

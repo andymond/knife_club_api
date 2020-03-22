@@ -31,7 +31,7 @@ describe V1::SessionsController, type: :controller do
   describe "#destroy" do
     it "logs user out" do
       request.headers.merge(auth_headers)
-      delete :destroy, params: { email: user.email }
+      delete :destroy
       json_response = JSON.parse(response.body, symbolize_names: true)
 
       expect(response).to have_http_status(200)

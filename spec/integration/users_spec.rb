@@ -37,13 +37,7 @@ describe "Users API" do
             }
           }
         }
-        examples schema: {
-          type: :object,
-          properties: {
-            msg: "Created Account",
-            email: { type: :string }
-          }
-        }
+        examples created: { msg: "Created Account", id: "1" }
         run_test!
       end
 

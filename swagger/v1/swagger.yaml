@@ -287,6 +287,75 @@ paths:
             "$ref": "#/definitions/cookbook"
         '404':
           description: Not Found
+  "/v1/sessions":
+    post:
+      summary: Log User In
+      tags:
+      - Sessions
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: credentials
+        in: body
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+      responses:
+        '201':
+          description: Logged User In
+          schema:
+            name: login
+            in: body
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+          examples:
+            login:
+              token: '1234567890'
+        '401':
+          description: Invalid Credentials
+          schema:
+            "$ref": "#/definitions/msg"
+          examples:
+            "$ref": "#/definitions/msg"
+        '403':
+          description: User Locked Out
+          schema:
+            "$ref": "#/definitions/msg"
+          examples:
+            "$ref": "#/definitions/msg"
+    delete:
+      summary: Log User Out
+      tags:
+      - Sessions
+      security:
+      - api_key: []
+      - user_id: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: Logged User Out
+          schema:
+            "$ref": "#/definitions/msg"
+          examples:
+            "$ref": "#/definitions/msg"
+        '401':
+          description: Logout Failed
+          schema:
+            "$ref": "#/definitions/msg"
+          examples:
+            "$ref": "#/definitions/msg"
   "/v1/users":
     post:
       summary: Register User
@@ -327,12 +396,9 @@ paths:
         '201':
           description: Registered User
           examples:
-            schema:
-              type: object
-              properties:
-                msg: Created Account
-                email:
-                  type: string
+            created:
+              msg: Created Account
+              id: '1'
         '409':
           description: Registration Failed
           schema:
