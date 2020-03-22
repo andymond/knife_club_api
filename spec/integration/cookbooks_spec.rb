@@ -43,6 +43,7 @@ describe "Cookbooks API" do
 
       response "200", "Cookbooks" do
         let(:cookbook) { create(:cookbook) }
+        let(:id) { cookbook.id }
         before { user.allow_to_read(cookbook) }
 
         schema "$ref" => "#/definitions/cookbook_list"
@@ -50,13 +51,77 @@ describe "Cookbooks API" do
 
         run_test!
       end
+    end
+  end
+
+  path "/v1/cookbooks/{id}" do
+    parameter name: :id, in: :path, schema: { type: :string }
+
+    get "Gets A Cookbook" do
+      tags 'Cookbooks'
+      security [ { api_key: [] }, { user_id: [] } ]
+
+      response "200", "Cookbook" do
+        let(:cookbook) { create(:cookbook) }
+        let(:id) { cookbook.id }
+        before { user.allow_to_read(cookbook) }
+
+        schema "$ref" => "#/definitions/cookbook"
+        examples "$ref" => "#/definitions/cookbook"
+
+        run_test!
+      end
+
+      response "404", "Not Found" do
+        let(:cookbook) { { public: true } }
+        let(:id) { "No" }
+        run_test!
+      end
+    end
+
+    put "Update A Cookbook" do
+      tags 'Cookbooks'
+      security [ { api_key: [] }, { user_id: [] } ]
+
+      response "200", "Updated Cookbook" do
+        let(:cookbook) { create(:cookbook) }
+        let(:id) { cookbook.id }
+        before { user.allow_contributions_to(cookbook) }
+
+        schema "$ref" => "#/definitions/cookbook"
+        examples "$ref" => "#/definitions/cookbook"
+
+        run_test!
+      end
 
       response "404", "Not Found" do
         let(:cookbook) { create(:cookbook) }
+        let(:id) { cookbook.id }
         before { user.allow_to_read(cookbook) }
 
-        schema "$ref" => "#/definitions/cookbook_list"
-        examples "$ref" => "#/definitions/cookbook_list"
+        run_test!
+      end
+    end
+
+    delete "Remove User's Cookbook" do
+      tags "Cookbooks"
+      security [ { api_key: [] }, { user_id: [] } ]
+
+      response "200", "Deleted Cookbook" do
+        let(:cookbook) { create(:cookbook) }
+        let(:id) { cookbook.id }
+        before { user.grant_all_access(cookbook) }
+
+        schema "$ref" => "#/definitions/cookbook"
+        examples "$ref" => "#/definitions/cookbook"
+
+        run_test!
+      end
+
+      response "404", "Not Found" do
+        let(:cookbook) { create(:cookbook) }
+        let(:id) { "nope" }
+        before { user.allow_to_read(cookbook) }
 
         run_test!
       end

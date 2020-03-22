@@ -55,7 +55,11 @@ paths:
           - name
       responses:
         '201':
-          description: Cookbook
+          description: Created
+          schema:
+            "$ref": "#/definitions/cookbook"
+          examples:
+            "$ref": "#/definitions/cookbook"
         '409':
           description: Creation Failed
     get:
@@ -72,3 +76,58 @@ paths:
             "$ref": "#/definitions/cookbook_list"
           examples:
             "$ref": "#/definitions/cookbook_list"
+  "/v1/cookbooks/{id}":
+    parameters:
+    - name: id
+      in: path
+      schema:
+        type: string
+      required: true
+    get:
+      summary: Gets A Cookbook
+      tags:
+      - Cookbooks
+      security:
+      - api_key: []
+      - user_id: []
+      responses:
+        '200':
+          description: Cookbook
+          schema:
+            "$ref": "#/definitions/cookbook"
+          examples:
+            "$ref": "#/definitions/cookbook"
+        '404':
+          description: Not Found
+    put:
+      summary: Update A Cookbook
+      tags:
+      - Cookbooks
+      security:
+      - api_key: []
+      - user_id: []
+      responses:
+        '200':
+          description: Updated Cookbook
+          schema:
+            "$ref": "#/definitions/cookbook"
+          examples:
+            "$ref": "#/definitions/cookbook"
+        '404':
+          description: Not Found
+    delete:
+      summary: Remove User's Cookbook
+      tags:
+      - Cookbooks
+      security:
+      - api_key: []
+      - user_id: []
+      responses:
+        '200':
+          description: Deleted Cookbook
+          schema:
+            "$ref": "#/definitions/cookbook"
+          examples:
+            "$ref": "#/definitions/cookbook"
+        '404':
+          description: Not Found
