@@ -9,6 +9,10 @@ class CookbookPolicy < ApplicationPolicy
   end
 
   def destroy?
+    owns?
+  end
+
+  def owns?
     user.owns?(record)
   end
 end
