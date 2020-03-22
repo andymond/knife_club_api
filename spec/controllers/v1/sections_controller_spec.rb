@@ -43,7 +43,7 @@ describe V1::SectionsController do
       it "wont update general section" do
         put :update, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id, name: "Updated Section" }
 
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(409)
       end
     end
 
