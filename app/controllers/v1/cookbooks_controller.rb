@@ -15,7 +15,7 @@ class V1::CookbooksController < ApplicationController
   end
 
   def index
-    render json: current_user.cookbooks
+    render json: current_user.cookbooks.alphabetized
   end
 
   def update

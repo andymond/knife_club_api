@@ -22,7 +22,7 @@ class V1::RecipesController < ApplicationController
     check_roles = "SELECT DISTINCT urr.id FROM user_recipe_roles urr WHERE urr.user_id = ?"
     has_permission = "recipes.public = true OR recipes.id IN (#{check_roles})"
     section_recipes = cookbook.sections.find(params[:section_id]).recipes
-    recipes = section_recipes.where(has_permission, current_user.id)
+    recipes = section_recipes.where(has_permission, current_user.id).alphabetized
     render json: recipes
   end
 

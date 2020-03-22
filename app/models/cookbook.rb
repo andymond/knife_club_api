@@ -21,6 +21,8 @@ class Cookbook < ApplicationRecord
 
   after_create :add_general_section
 
+  scope :alphabetized, -> { order(:name) }
+
   def owners
     owner_ids = user_cookbook_roles.where(role: Role.owner).distinct.pluck(:user_id)
     users.where(id: owner_ids)
