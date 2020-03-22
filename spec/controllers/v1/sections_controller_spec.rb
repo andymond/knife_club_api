@@ -31,12 +31,12 @@ describe V1::SectionsController do
       expect(payload[:section][:name]).to eq("Created Section")
     end
 
-    xcontext "can #update" do
+    context "can #update" do
       it "updates normal section" do
         put :update, params: { cookbook_id: cookbook.id, id: section.id, name: "Updated Section" }
         payload = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(200)
         expect(payload[:section][:name]).to eq("Updated Section")
       end
 
@@ -92,7 +92,7 @@ describe V1::SectionsController do
       expect(response).to have_http_status(404)
     end
 
-    xit "can not #update" do
+    it "can not #update" do
       put :update, params: { cookbook_id: cookbook.id, id: section.id, name: "Updated Section" }
 
       expect(response).to have_http_status(404)
@@ -116,7 +116,7 @@ describe V1::SectionsController do
       expect(response).to have_http_status(404)
     end
 
-    xit "can not #update" do
+    it "can not #update" do
       put :update, params: { cookbook_id: cookbook.id, id: section.id, name: "Updated Section" }
 
       expect(response).to have_http_status(404)
@@ -141,7 +141,7 @@ describe V1::SectionsController do
       expect(response).to have_http_status(404)
     end
 
-    xit "can not #update" do
+    it "can not #update" do
       put :update, params: { cookbook_id: cookbook.id, id: section.id, name: "Updated Section" }
 
       expect(response).to have_http_status(404)

@@ -10,6 +10,15 @@ class V1::SectionsController < ApplicationController
     end
   end
 
+  def update
+    section = cookbook.sections.find_by(id: params[:id])
+    if section&.update(section_params)
+      render json: section, status: 200
+    else
+      render json: { msg: "Update Failed" }, status: 409
+    end
+  end
+
   private
     attr_reader :cookbook
 

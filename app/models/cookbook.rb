@@ -43,8 +43,8 @@ class Cookbook < ApplicationRecord
 
   private
     def add_general_section
-      general_name = self.name + ' general'
-      self.sections.create(name: general_name, general: true)
+      general_name = self.name + " general"
+      self.sections.create!(name: general_name, general: true)
     end
 
     def remove_general_sections
