@@ -13,7 +13,7 @@ class V1::RecipesController < ApplicationController
   end
 
   def show
-    recipe = Recipe.find(params[:id])
+    recipe = Recipe.find_by(id: params[:id])
     authorize recipe
     render json: recipe
   end
@@ -27,7 +27,7 @@ class V1::RecipesController < ApplicationController
   end
 
   def update
-    recipe = Recipe.find(params[:id])
+    recipe = Recipe.find_by(id: params[:id])
     authorize recipe
     if recipe.update(recipe_params)
       render json: recipe
@@ -37,7 +37,7 @@ class V1::RecipesController < ApplicationController
   end
 
   def destroy
-    recipe = Recipe.find(params[:id])
+    recipe = Recipe.find_by(id: params[:id])
     authorize recipe
     if recipe.destroy
       render json: recipe

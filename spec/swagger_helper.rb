@@ -49,6 +49,23 @@ RSpec.configure do |config|
             name: { type: :string },
             id: { type: :integer }
           }
+        },
+        recipe_list: {
+          type: :object,
+            properties: {
+              recipes: {
+                type: :array,
+                cookbook: { "$ref" => "#/definitions/recipe" }
+              }
+            }
+        },
+        recipe: {
+          type: :object,
+          properties: {
+            sections: { type: :array },
+            name: { type: :string },
+            id: { type: :integer }
+          }
         }
       },
       paths: {}

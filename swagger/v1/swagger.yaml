@@ -30,6 +30,22 @@ definitions:
         type: string
       id:
         type: integer
+  recipe_list:
+    type: object
+    properties:
+      recipes:
+        type: array
+        cookbook:
+          "$ref": "#/definitions/recipe"
+  recipe:
+    type: object
+    properties:
+      sections:
+        type: array
+      name:
+        type: string
+      id:
+        type: integer
 paths:
   "/v1/cookbooks":
     post:
@@ -125,6 +141,130 @@ paths:
       responses:
         '200':
           description: Deleted Cookbook
+          schema:
+            "$ref": "#/definitions/cookbook"
+          examples:
+            "$ref": "#/definitions/cookbook"
+        '404':
+          description: Not Found
+  "/v1/cookbooks/{cookbook_id}/recipes":
+    parameters:
+    - name: cookbook_id
+      in: path
+      schema:
+        type: string
+      required: true
+    post:
+      summary: Creates A Recipe
+      tags:
+      - Recipes
+      security:
+      - api_key: []
+      - user_id: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: recipe
+        in: body
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            public:
+              type: boolean
+          required:
+          - name
+      responses:
+        '201':
+          description: Created
+          schema:
+            "$ref": "#/definitions/recipe"
+          examples:
+            "$ref": "#/definitions/recipe"
+        '409':
+          description: Creation Failed
+    get:
+      summary: Gets Cookbook's Recipes
+      tags:
+      - Recipes
+      security:
+      - api_key: []
+      - user_id: []
+      parameters:
+      - name: section_id
+        in: query
+        type: string
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          description: Recipes
+          schema:
+            "$ref": "#/definitions/recipe_list"
+          examples:
+            "$ref": "#/definitions/recipe_list"
+  "/v1/cookbooks/{cookbook_id}/recipes/{id}":
+    parameters:
+    - name: cookbook_id
+      in: path
+      schema:
+        type: string
+      required: true
+    - name: id
+      in: path
+      schema:
+        type: string
+      required: true
+    get:
+      summary: Gets A Recipe
+      tags:
+      - Recipes
+      security:
+      - api_key: []
+      - user_id: []
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: Recipe
+          schema:
+            "$ref": "#/definitions/recipe"
+          examples:
+            "$ref": "#/definitions/recipe"
+        '404':
+          description: Not Found
+    put:
+      summary: Update A Recipe
+      tags:
+      - Recipes
+      security:
+      - api_key: []
+      - user_id: []
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: Updated Recipe
+          schema:
+            "$ref": "#/definitions/cookbook"
+          examples:
+            "$ref": "#/definitions/cookbook"
+        '404':
+          description: Not Found
+    delete:
+      summary: Remove User's Recipe
+      tags:
+      - Recipes
+      security:
+      - api_key: []
+      - user_id: []
+      responses:
+        '200':
+          description: Deleted Recipe
           schema:
             "$ref": "#/definitions/cookbook"
           examples:
