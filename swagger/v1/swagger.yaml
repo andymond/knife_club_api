@@ -1,14 +1,44 @@
 ---
 openapi: 3.0.1
+supportedSubmitMethods: []
 info:
-  title: API V1
+  title: Knife Club API V1
   version: v1
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: Authorization
+    in: header
+  user_id:
+    type: apiKey
+    name: User
+    in: header
+definitions:
+  cookbook_list:
+    type: object
+    properties:
+      cookbooks:
+        type: array
+        cookbook:
+          "$ref": "#/definitions/cookbook"
+  cookbook:
+    type: object
+    properties:
+      sections:
+        type: array
+      name:
+        type: string
+      id:
+        type: integer
 paths:
   "/v1/cookbooks":
     post:
       summary: Creates A Cookbook
       tags:
       - Cookbooks
+      security:
+      - api_key: []
+      - user_id: []
       consumes:
       - application/json
       parameters:
@@ -28,3 +58,17 @@ paths:
           description: Cookbook
         '409':
           description: Creation Failed
+    get:
+      summary: Gets Users Cookbooks
+      tags:
+      - Cookbooks
+      security:
+      - api_key: []
+      - user_id: []
+      responses:
+        '200':
+          description: Cookbooks
+          schema:
+            "$ref": "#/definitions/cookbook_list"
+          examples:
+            "$ref": "#/definitions/cookbook_list"

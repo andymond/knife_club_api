@@ -15,6 +15,7 @@ RSpec.configure do |config|
   config.swagger_docs = {
     'v1/swagger.yaml' => {
       openapi: '3.0.1',
+      supportedSubmitMethods: [],
       info: {
         title: 'Knife Club API V1',
         version: 'v1'
@@ -29,6 +30,25 @@ RSpec.configure do |config|
           type: :apiKey,
           name: 'User',
           in: :header
+        }
+      },
+      definitions: {
+        cookbook_list: {
+          type: :object,
+            properties: {
+              cookbooks: {
+                type: :array,
+                cookbook: { "$ref" => "#/definitions/cookbook" }
+              }
+            }
+        },
+        cookbook: {
+          type: :object,
+          properties: {
+            sections: { type: :array },
+            name: { type: :string },
+            id: { type: :integer }
+          }
         }
       },
       paths: {}

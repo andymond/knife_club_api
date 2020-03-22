@@ -22,13 +22,42 @@ describe "Cookbooks API" do
         required: ["name"]
       }
 
-      response "201", "Cookbook" do
+      response "201", "Created" do
         let(:cookbook) { { name: "Martha & Snoop At Home" } }
+
+        schema "$ref" => "#/definitions/cookbook"
+        examples "$ref" => "#/definitions/cookbook"
+
         run_test!
       end
 
       response "409", "Creation Failed" do
         let(:cookbook) { { public: true } }
+        run_test!
+      end
+    end
+
+    get "Gets Users Cookbooks" do
+      tags 'Cookbooks'
+      security [ { api_key: [] }, { user_id: [] } ]
+
+      response "200", "Cookbooks" do
+        let(:cookbook) { create(:cookbook) }
+        before { user.allow_to_read(cookbook) }
+
+        schema "$ref" => "#/definitions/cookbook_list"
+        examples "$ref" => "#/definitions/cookbook_list"
+
+        run_test!
+      end
+
+      response "404", "Not Found" do
+        let(:cookbook) { create(:cookbook) }
+        before { user.allow_to_read(cookbook) }
+
+        schema "$ref" => "#/definitions/cookbook_list"
+        examples "$ref" => "#/definitions/cookbook_list"
+
         run_test!
       end
     end
