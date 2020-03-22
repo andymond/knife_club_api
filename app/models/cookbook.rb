@@ -22,6 +22,7 @@ class Cookbook < ApplicationRecord
   has_many :recipes, through: :sections
 
   after_create :add_general_section
+  before_destroy :remove_general_sections, prepend: true
 
   scope :alphabetized, -> { order(:name) }
 
@@ -41,9 +42,12 @@ class Cookbook < ApplicationRecord
   end
 
   private
+    def add_general_section
+      general_name = self.name + ' general'
+      self.sections.create(name: general_name, general: true)
+    end
 
-  def add_general_section
-    general_name = name + ' general'
-    sections.create(name: general_name)
-  end
+    def remove_general_sections
+      self.general_section.update(general: false)
+    end
 end
