@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class V1::RecipesController < ApplicationController
   before_action :authorize_cookbook_update, except: %i[index show]
   before_action :authorize_cookbook_view, only: %i[index show]

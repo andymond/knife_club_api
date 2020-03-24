@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class V1::CookbooksController < ApplicationController
   def create
     cookbook = current_user.create_permission_record(Cookbook, cookbook_params)

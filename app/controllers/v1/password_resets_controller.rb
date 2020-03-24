@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class V1::PasswordResetsController < ApplicationController
   def create
     @user = User.find_by(params[:email])

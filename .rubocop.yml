@@ -21,6 +21,15 @@ Metrics/BlockLength:
     - config/**/*
     - spec/**/*
 
+RSpec/NestedGroups:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ContextWording:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 

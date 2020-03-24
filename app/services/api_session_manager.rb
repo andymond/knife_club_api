@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApiSessionManager
   def initialize(user_id)
     @user = User.find_by(id: user_id)
