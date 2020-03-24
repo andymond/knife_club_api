@@ -11,8 +11,9 @@
 #
 
 class Role < ApplicationRecord
-  has_many :user_cookbook_roles
-  has_many :cookbook_users, through: :user_cookbook_roles, foreign_key: 'user_id', class_name: 'User'
+  has_many :user_cookbook_roles, dependent: :destroy
+  has_many :cookbook_users, through: :user_cookbook_roles,
+                            foreign_key: 'user_id', class_name: 'User'
 
   Rails.configuration.roles.each do |name|
     define_singleton_method(name) do
