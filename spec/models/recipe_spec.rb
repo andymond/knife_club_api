@@ -35,10 +35,10 @@ describe Recipe do
   end
 
   context 'relationships' do
-    let(:cool_chef) { create(:user) }
-    let(:doomed_recipe) { create(:recipe, section: doomed_section) }
-    let(:ingredient) { doomed_recipe.ingredients.create(name: 'Lime') }
-    let(:doomed_instruction) { doomed_recipe.instructions.create(step: 1, text: 'Test') }
+    let!(:cool_chef) { create(:user) }
+    let!(:doomed_recipe) { create(:recipe) }
+    let!(:ingredient) { doomed_recipe.ingredients.create(name: 'Lime') }
+    let!(:doomed_instruction) { doomed_recipe.instructions.create(step: 1, text: 'Test') }
 
     it { is_expected.to belong_to(:section) }
     it { is_expected.to have_many(:instructions) }

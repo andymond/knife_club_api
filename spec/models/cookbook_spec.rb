@@ -24,10 +24,10 @@ describe Cookbook do
   end
 
   context 'relationships' do
-    let(:cool_chef) { create(:user) }
-    let(:doomed_cookbook) { create(:cookbook) }
-    let(:doomed_section) { doomed_cookbook.general_section }
-    let(:doomed_recipe) { create(:recipe, section: doomed_section) }
+    let!(:cool_chef) { create(:user) }
+    let!(:doomed_cookbook) { create(:cookbook) }
+    let!(:doomed_section) { doomed_cookbook.general_section }
+    let!(:doomed_recipe) { create(:recipe, section: doomed_section) }
 
     it { is_expected.to have_many(:user_cookbook_roles) }
     it { is_expected.to have_many(:users) }
