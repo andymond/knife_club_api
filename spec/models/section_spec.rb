@@ -34,20 +34,20 @@ describe Section do
     it { is_expected.to validate_presence_of(:name) }
 
     it 'only allows one general section per cookbook' do
-      general_2 = build(:section, general: true, cookbook: cookbook)
+      general2 = build(:section, general: true, cookbook: cookbook)
 
-      expect(general_2.valid?).to eq(false)
-      expect { general_2.save! }.to raise_error(ActiveRecord::RecordInvalid)
+      expect(general2.valid?).to eq(false)
+      expect { general2.save! }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'allows multiple non generals' do
-      section_1 = build(:section, cookbook: cookbook)
-      section_2 = build(:section, cookbook: cookbook)
+      section1 = build(:section, cookbook: cookbook)
+      section2 = build(:section, cookbook: cookbook)
 
-      expect(section_1.valid?).to eq(true)
-      expect(section_2.valid?).to eq(true)
-      expect { section_1.save! }.not_to raise_error
-      expect { section_2.save! }.not_to raise_error
+      expect(section1.valid?).to eq(true)
+      expect(section2.valid?).to eq(true)
+      expect { section1.save! }.not_to raise_error
+      expect { section2.save! }.not_to raise_error
     end
 
     it 'cant update general name' do
