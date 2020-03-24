@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: recipe_ingredients
@@ -23,7 +25,7 @@
 #
 
 class RecipeIngredient < ApplicationRecord
-  enum ingredient_type: { ingredient: "ingredient", recipe: "recipe", other: "other" }
+  enum ingredient_type: { ingredient: 'ingredient', recipe: 'recipe', other: 'other' }
 
   belongs_to :recipe
   belongs_to :ingredient

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: users
@@ -22,64 +24,64 @@
 #  index_users_on_reset_password_token  (reset_password_token)
 #
 
-require "rails_helper"
+require 'rails_helper'
 
 describe User do
-  context "relationships" do
-    it { should have_one(:api_session) }
-    it { should have_many(:user_cookbook_roles) }
-    it { should have_many(:user_recipe_roles) }
-    it { should have_many(:cookbook_roles) }
-    it { should have_many(:recipe_roles) }
-    it { should have_many(:cookbooks) }
-    it { should have_many(:recipes) }
+  context 'relationships' do
+    it { is_expected.to have_one(:api_session) }
+    it { is_expected.to have_many(:user_cookbook_roles) }
+    it { is_expected.to have_many(:user_recipe_roles) }
+    it { is_expected.to have_many(:cookbook_roles) }
+    it { is_expected.to have_many(:recipe_roles) }
+    it { is_expected.to have_many(:cookbooks) }
+    it { is_expected.to have_many(:recipes) }
   end
 
-  context "validations" do
-    let(:user) { described_class.new }
+  context 'validations' do
+    subject(:user) { described_class.new }
 
-    it "validates password" do
-      user.password = "xy"
+    it 'validates password' do
+      user.password = 'xy'
       user.valid?
 
-      expect(user.errors[:password]).to include("is too short (minimum is 3 characters)")
-      should validate_presence_of(:password_confirmation)
+      expect(user.errors[:password]).to include('is too short (minimum is 3 characters)')
+      expect(user).to validate_presence_of(:password_confirmation)
     end
 
-    it "validates email" do
-      should validate_presence_of(:email)
-      invalid_email = ["lameemail", "notreal@", "fakecontactinfo.com"].sample
+    it 'validates email' do
+      expect(user).to validate_presence_of(:email)
+      invalid_email = ['lameemail', 'notreal@', 'fakecontactinfo.com'].sample
       user.email = invalid_email
       user.valid?
 
-      expect(user.errors[:email]).to include("is invalid")
+      expect(user.errors[:email]).to include('is invalid')
     end
   end
 
-  context "instance methods" do
+  context 'instance methods' do
     let(:owner) { create(:user) }
-    let!(:cookbook) { owner.create_permission_record(Cookbook, { name: "Icy Delicacies" }) }
+    let!(:cookbook) { owner.create_permission_record(Cookbook, { name: 'Icy Delicacies' }) }
 
-    describe "#create_cookbook" do
-      it "creates a cook book w/ proper relationship" do
+    describe '#create_cookbook' do
+      it 'creates a cook book w/ proper relationship' do
         expect(owner.cookbooks).to include(cookbook)
         expect(owner.user_cookbook_roles.where(cookbook: cookbook, role: Role.owner).count).to eq(1)
       end
     end
 
-    describe "#can_read?(cookbook)" do
-      it "returns true if user has any relation to private cookbook" do
+    describe '#can_read?(cookbook)' do
+      it 'returns true if user has any relation to private cookbook' do
         expect(owner.can_read?(cookbook)).to eq(true)
       end
 
-      it "returns false if user does not have relationship to private cookbook" do
+      it 'returns false if user does not have relationship to private cookbook' do
         rando = create(:user)
         expect(rando.can_read?(cookbook)).to eq(false)
       end
     end
 
-    describe "#can_update?(cookbook)" do
-      it "returns true if user has contribute role for cookbook" do
+    describe '#can_update?(cookbook)' do
+      it 'returns true if user has contribute role for cookbook' do
         contributor = create(:user)
         contributor.allow_contributions_to(cookbook)
 
@@ -90,21 +92,18 @@ describe User do
         expect(owner.can_update?(cookbook)).to eq(true)
       end
 
-
-      it "returns false if user does not have contribute role for cookbook" do
+      it 'returns false if user does not have contribute role for cookbook' do
         rando = create(:user)
         expect(rando.can_update?(cookbook)).to eq(false)
       end
     end
 
-
-    describe "#owns?(cookbook)" do
-      it "returns true if user has owner role for cookbook" do
+    describe '#owns?(cookbook)' do
+      it 'returns true if user has owner role for cookbook' do
         expect(owner.owns?(cookbook)).to eq(true)
       end
 
-
-      it "returns false if user does not have contribute role for cookbook" do
+      it 'returns false if user does not have contribute role for cookbook' do
         contributor = create(:user)
         contributor.allow_contributions_to(cookbook)
 
@@ -119,18 +118,21 @@ describe User do
       end
     end
 
-
-    describe "#allow_to_read(cookbook)" do
-      it "grants reader role to user" do
+    describe '#allow_to_read(cookbook)' do
+      it 'grants reader role to user' do
         reader = create(:user)
-        expect{ reader.allow_to_read(cookbook) }.to change{ reader.user_cookbook_roles.where(cookbook: cookbook, role: Role.reader ).count }.by 1
+        roles = reader.user_cookbook_roles.where(cookbook: cookbook, role: Role.reader)
+
+        expect { reader.allow_to_read(cookbook) }.to change { roles.count }.by 1
       end
     end
 
-    describe "#allow_contributions_to(cookbook)?" do
-      it "grants contribution role to user" do
+    describe '#allow_contributions_to(cookbook)?' do
+      it 'grants contribution role to user' do
         contributor = create(:user)
-        expect{ contributor.allow_contributions_to(cookbook) }.to change{ contributor.user_cookbook_roles.where(cookbook: cookbook, role: Role.contributor).count }.by 1
+        roles = contributor.user_cookbook_roles.where(cookbook: cookbook, role: Role.contributor)
+
+        expect { contributor.allow_contributions_to(cookbook) }.to change { roles.count }.by 1
       end
     end
   end

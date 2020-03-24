@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: user_api_sessions
@@ -49,7 +51,7 @@ class UserApiSession < ApplicationRecord
 
   private
 
-    def token_unexpired?
-      api_token_last_verified <= Time.current
-    end
+  def token_unexpired?
+    api_token_last_verified <= Time.current
+  end
 end

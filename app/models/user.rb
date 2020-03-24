@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: users
@@ -25,33 +27,30 @@
 class User < ApplicationRecord
   authenticates_with_sorcery!
 
-  has_one :api_session, class_name: "UserApiSession"
-  has_many :user_cookbook_roles
-  has_many :user_recipe_roles
-  has_many :cookbook_roles, through: :user_cookbook_roles, foreign_key: :role_id, class_name: "Role"
-  has_many :recipe_roles, through: :user_recipe_roles, foreign_key: :role_id, class_name: "Role"
+  has_one :api_session, class_name: 'UserApiSession', dependent: :destroy
+  has_many :user_cookbook_roles, dependent: :destroy
+  has_many :user_recipe_roles, dependent: :destroy
+  has_many :cookbook_roles, through: :user_cookbook_roles, foreign_key: :role_id, class_name: 'Role'
+  has_many :recipe_roles, through: :user_recipe_roles, foreign_key: :role_id, class_name: 'Role'
   has_many :cookbooks, -> { distinct }, through: :user_cookbook_roles
   has_many :recipes, -> { distinct }, through: :user_recipe_roles
 
-  validates :password, length: { minimum: 3 }, if: -> { new_record? || changes[:crypted_password] }
-  validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }
-  validates :password_confirmation, presence: true, if: -> { new_record? || changes[:crypted_password] }
+  validates :password, length: { minimum: 3 }, if: -> { new_or_changes(:crypted_password) }
+  validates :password, confirmation: true, if: -> { new_or_changes(:crypted_password) }
+  validates :password_confirmation, presence: true, if: -> { new_or_changes(:crypted_password) }
 
   validates :email, presence: true, uniqueness: true
-  validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   def create_permission_record(klass, attrs)
     record = klass.create(attrs)
-    if record.persisted?
-      send(record.role_set).create(record.role_key => record, role: Role.owner)
-      send(record.role_set).create(record.role_key => record, role: Role.contributor)
-      send(record.role_set).create(record.role_key => record, role: Role.reader)
-    end
+    grant_all_access(record) if record.persisted?
     record
   end
 
   def can_read?(record)
     return true if record.public
+
     role = send(record.role_set).find_by(record.role_key => record, role: Role.reader)
     role ? true : false
   end
@@ -79,5 +78,11 @@ class User < ApplicationRecord
     send(record.role_set).find_or_create_by(record.role_key => record, role: Role.reader)
     send(record.role_set).find_or_create_by(record.role_key => record, role: Role.contributor)
     send(record.role_set).find_or_create_by(record.role_key => record, role: Role.owner)
+  end
+
+  private
+
+  def new_or_changes(attribute)
+    new_record? || changes[attribute]
   end
 end

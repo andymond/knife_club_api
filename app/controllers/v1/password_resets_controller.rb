@@ -1,37 +1,39 @@
-class V1::PasswordResetsController < ActionController::Base
+# frozen_string_literal: true
 
-  def create
-    @user = User.find_by(params[:email])
-    @user.deliver_reset_password_instructions! if @user
-    render json: { notice: "Password reset sent." }, status: 201
-  end
+module V1
+  class PasswordResetsController < ApplicationController
+    skip_before_action :authenticate
 
-  def edit
-    @token = params[:id]
-    @user = User.load_from_reset_password_token(params[:id])
-    verify(@user)
-    render :edit unless @user.blank?
-  end
-
-  def update
-    @token = params[:id]
-    @user = User.load_from_reset_password_token(params[:id])
-    verify(@user)
-
-    @user.password_confirmation = params[:user][:password_confirmation]
-    if @user.change_password!(params[:user][:password])
-      render json: { notice: "Password was successfully updated." }, status: 200
-    else
-      render json: { failure: "User password reset failed." }, status: 409
+    def create
+      user = User.find_by(email: params[:email])
+      user&.deliver_reset_password_instructions!
+      render json: { msg: 'Password reset sent.' }, status: 201
     end
-  end
 
-  private
-
-    def verify(user)
-      if user.blank?
-        render json: { error: "User not found." }, status: 404
-        return
+    def edit
+      user = User.load_from_reset_password_token(params[:token])
+      if user
+        render :edit if user.present?
+      else
+        render json: { msg: 'Invalid Token' }, status: 400
       end
     end
+
+    def update
+      user = User.load_from_reset_password_token(params[:token])
+      if user
+        user.password_confirmation = change_params[:password_confirmation]
+        user.change_password!(change_params[:password])
+        render json: { msg: 'Password was successfully updated.' }, status: 200
+      else
+        render json: { msg: 'Invalid Token' }, status: 400
+      end
+    end
+
+    private
+
+    def change_params
+      params.require(:user).permit(:password, :password_confirmation)
+    end
+  end
 end

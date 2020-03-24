@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: recipes
@@ -21,7 +23,7 @@
 class Recipe < ApplicationRecord
   include PermissionRecord
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   belongs_to :section
   has_many :instructions, dependent: :destroy

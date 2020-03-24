@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: sections
@@ -18,7 +20,7 @@
 #
 
 class Section < ApplicationRecord
-  validates_presence_of :name
+  validates :name, presence: true
 
   belongs_to :cookbook
   has_many :recipes, dependent: :destroy

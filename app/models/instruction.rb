@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: instructions
@@ -19,7 +21,7 @@
 #
 
 class Instruction < ApplicationRecord
-  validates_presence_of :text
+  validates :text, presence: true
 
   belongs_to :recipe
 end

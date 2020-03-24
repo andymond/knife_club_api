@@ -3,7 +3,7 @@ class AddIngredientTypeToRecipeIngredient < ActiveRecord::Migration[5.2]
     execute <<-SQL
       CREATE TYPE ingredient_type AS ENUM ('recipe', 'ingredient', 'other');
     SQL
-    add_column :recipe_ingredients, :ingredient_type, :ingredient_type, default: "ingredient", null: false
+    add_column :recipe_ingredients, :ingredient_type, :ingredient_type, default: 'ingredient', null: false
   end
 
   def down
