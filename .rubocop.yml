@@ -8,6 +8,7 @@ AllCops:
     - 'db/**/*'
     - 'script/**/*'
     - 'bin/**/*'
+    - 'spec/integration/*'
 
 Layout/LineLength:
     Max: 100
@@ -22,10 +23,8 @@ Metrics/BlockLength:
   Exclude:
     - config/**/*
     - spec/**/*
-
-RSpec/AnyInstance:
-  Exclude:
-    - spec/integration/*
+Rails/FilePath:
+  EnforcedStyle: 'arguments'
 
 RSpec/ContextWording:
   Enabled: false

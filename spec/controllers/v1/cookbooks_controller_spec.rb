@@ -27,9 +27,10 @@ describe V1::CookbooksController, type: :controller do
 
     describe '#create' do
       let(:create_request) { post :create, params: { name: 'Test Cookbook' } }
+      let(:owner_roles) { rando.user_cookbook_roles.where(role: Role.owner) }
 
       it { expect { create_request }.to change { rando.cookbooks.count }.by 1 }
-      it { expect { create_request }.to change { rando.user_cookbook_roles.where(role: Role.owner).count }.by 1 }
+      it { expect { create_request }.to change(owner_roles, :count).by 1 }
       it { expect { create_request }.to change(Section, :count).by 1 }
 
       it 'returns serialized cookbook' do

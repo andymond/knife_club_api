@@ -25,19 +25,12 @@ describe V1::PasswordResetsController do
       let(:password_params) { { password: 'password3', password_confirmation: 'password3' } }
 
       before do
+        allow(controller).to recieve(:authenticated).and_return(true)
         allow(User).to receive(:load_from_reset_password_token).and_return(user)
         put :update, params: { user: password_params }
       end
 
       it { expect(response).to have_http_status(:ok) }
-    end
-  end
-
-  context 'user not returned from token' do
-    describe '#edit' do
-    end
-
-    describe '#update' do
     end
   end
 end

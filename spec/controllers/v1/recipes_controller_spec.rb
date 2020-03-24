@@ -130,7 +130,8 @@ describe V1::RecipesController, type: :controller do
     end
 
     context 'cookbook is private' do
-      let(:create_request) { post :create, params: { cookbook_id: cookbook.id, name: 'Create Recipe' } }
+      let(:params) { { cookbook_id: cookbook.id, name: 'Create Recipe' } }
+      let(:create_request) { post :create, params: params }
 
       it { expect { create_request }.not_to change(Recipe, :count) }
 
@@ -182,7 +183,8 @@ describe V1::RecipesController, type: :controller do
     end
 
     context 'cookbook is private' do
-      let(:create_request) { post :create, params: { cookbook_id: cookbook.id, name: 'Create Recipe' } }
+      let(:params) { { cookbook_id: cookbook.id, name: 'Create Recipe' } }
+      let(:create_request) { post :create, params: params }
 
       it { expect { create_request }.not_to change(Recipe, :count) }
 
@@ -215,7 +217,8 @@ describe V1::RecipesController, type: :controller do
     context 'cookbook is public' do
       before { allow(cookbook).to receive(:public).and_return(true) }
 
-      let(:create_request) { post :create, params: { cookbook_id: cookbook.id, name: 'Create Recipe' } }
+      let(:params) { { cookbook_id: cookbook.id, name: 'Create Recipe' } }
+      let(:create_request) { post :create, params: params }
 
       it { expect { create_request }.not_to change(Recipe, :count) }
 
