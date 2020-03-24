@@ -5,7 +5,6 @@ require 'rails_helper'
 describe V1::PasswordResetsController do
   let(:user) { create(:user) }
 
-
   describe '#create' do
     it 'creates token' do
       post :create, params: { email: user.email }
@@ -25,6 +24,18 @@ describe V1::PasswordResetsController do
 
         expect(response).to have_http_status(:ok)
       end
+
+      it 'fails with bad token' do
+        get :edit, params: { token: 'badtoken' }
+
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it 'fails with no token' do
+        get :edit, params: { token: '' }
+
+        expect(response).to have_http_status(:bad_request)
+      end
     end
 
     describe '#update' do
@@ -40,32 +51,18 @@ describe V1::PasswordResetsController do
         expect(response).to have_http_status(:ok)
         expect(user.reload.crypted_password).not_to eq(og_password)
       end
-    end
-  end
 
-  context 'user token invalid or missing' do
-    it "fails" do
-      get :edit, params: { token: 'badtoken' }
+      it 'fails with bad token' do
+        put :update, params: { token: 'badtoken' }
 
-      expect(response).to have_http_status(:bad_request)
-    end
+        expect(response).to have_http_status(:bad_request)
+      end
 
-    it "fails" do
-      get :edit, params: { token: '' }
+      it 'fails with no token' do
+        put :update
 
-      expect(response).to have_http_status(:bad_request)
-    end
-
-    it "fails" do
-      put :update, params: { token: 'badtoken' }
-
-      expect(response).to have_http_status(:bad_request)
-    end
-
-    it "fails" do
-      put :update
-
-      expect(response).to have_http_status(:bad_request)
+        expect(response).to have_http_status(:bad_request)
+      end
     end
   end
 end
