@@ -17,9 +17,9 @@ module V1
       render json: cookbook
     end
 
-  def index
-    render json: current_user.cookbooks.alphabetized
-  end
+    def index
+      render json: current_user.cookbooks.alphabetized
+    end
 
     def update
       cookbook = Cookbook.find_by(id: params[:id])

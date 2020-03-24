@@ -52,7 +52,7 @@ describe Cookbook do
 
   context 'callbacks' do
     it "creates 'general' section on create" do
-      expect{ cookbook }.to change{ Section.count }.by 1
+      expect { cookbook }.to change(Section, :count).by 1
       expect(cookbook.sections.first.name).to eq(cookbook.name + ' general')
       expect(cookbook.general_section.name).to eq(cookbook.name + ' general')
       expect(cookbook.general_section.general).to eq(true)

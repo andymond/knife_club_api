@@ -1,4 +1,6 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 describe V1::SectionsController do
   let(:owner) { create(:user) }
@@ -18,139 +20,138 @@ describe V1::SectionsController do
     reader.allow_to_read(cookbook)
   end
 
-  context "user owns cookbook" do
+  context 'user owns cookbook' do
     before do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(owner)
     end
 
-    it "can #create" do
-      post :create, params: { cookbook_id: cookbook.id, name: "Created Section" }
+    it 'can #create' do
+      post :create, params: { cookbook_id: cookbook.id, name: 'Created Section' }
       payload = JSON.parse(response.body, symbolize_names: true)
 
-      expect(response).to have_http_status(201)
-      expect(payload[:section][:name]).to eq("Created Section")
+      expect(response).to have_http_status(:created)
+      expect(payload[:section][:name]).to eq('Created Section')
     end
 
-    context "can #update" do
-      it "updates normal section" do
-        put :update, params: { cookbook_id: cookbook.id, id: section.id, name: "Updated Section" }
+    context 'can #update' do
+      it 'updates normal section' do
+        put :update, params: { cookbook_id: cookbook.id, id: section.id, name: 'Updated Section' }
         payload = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to have_http_status(200)
-        expect(payload[:section][:name]).to eq("Updated Section")
+        expect(response).to have_http_status(:ok)
+        expect(payload[:section][:name]).to eq('Updated Section')
       end
 
-      it "wont update general section" do
-        put :update, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id, name: "Updated Section" }
+      it 'wont update general section' do
+        put :update, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id, name: 'Updated Section' }
 
-        expect(response).to have_http_status(409)
+        expect(response).to have_http_status(:conflict)
       end
     end
 
-    xcontext "can #destroy" do
-      it "defaults to destroying section & moving recipes to general" do
+    xcontext 'can #destroy' do
+      it 'defaults to destroying section & moving recipes to general' do
         delete :destroy, params: { cookbook_id: cookbook.id, id: section.id }
         payload = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(payload[:msg]).to eq("Destroyed #{section.name} and moved its recipes to #{cookbook.general_section.name}")
       end
 
-      it "destroys section & moves recipes to different section if specified" do
+      it 'destroys section & moves recipes to different section if specified' do
         new_section = create(:section, cookbook: cookbook)
         delete :destroy, params: { cookbook_id: cookbook.id, id: section.id }
         payload = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(payload[:msg]).to eq("Destroyed #{section.name} and moved its recipes to #{new_section.name}")
       end
 
-      it "destroys section & its recipes if specified" do
+      it 'destroys section & its recipes if specified' do
         delete :destroy, params: { cookbook_id: cookbook.id, id: section.id }
         payload = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
         expect(payload[:msg]).to eq("Destroyed #{section.name} and its recipes")
       end
 
-      it "wont remove general section" do
+      it 'wont remove general section' do
         delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }
 
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end
 
-  context "user contributes to cookbook" do
+  context 'user contributes to cookbook' do
     before do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(contributor)
     end
 
-    it "can not #create" do
-      post :create, params: { cookbook_id: cookbook.id, name: "Created Recipe"}
+    it 'can not #create' do
+      post :create, params: { cookbook_id: cookbook.id, name: 'Created Recipe' }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
 
-    it "can not #update" do
-      put :update, params: { cookbook_id: cookbook.id, id: section.id, name: "Updated Section" }
+    it 'can not #update' do
+      put :update, params: { cookbook_id: cookbook.id, id: section.id, name: 'Updated Section' }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
 
-    xit "can not #destroy" do
+    xit 'can not #destroy' do
       delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
-  context "user reads cookbook" do
+  context 'user reads cookbook' do
     before do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(reader)
     end
 
-    it "can not #create" do
-      post :create, params: { cookbook_id: cookbook.id, name: "Created Recipe"}
+    it 'can not #create' do
+      post :create, params: { cookbook_id: cookbook.id, name: 'Created Recipe' }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
 
-    it "can not #update" do
-      put :update, params: { cookbook_id: cookbook.id, id: section.id, name: "Updated Section" }
+    it 'can not #update' do
+      put :update, params: { cookbook_id: cookbook.id, id: section.id, name: 'Updated Section' }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
 
-    xit "can not #destroy" do
+    xit 'can not #destroy' do
       delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
-
   end
 
-  context "user unassociated with cookbook" do
+  context 'user unassociated with cookbook' do
     before do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(rando)
     end
 
-    it "can not #create" do
-      post :create, params: { cookbook_id: cookbook.id, name: "Created Recipe"}
+    it 'can not #create' do
+      post :create, params: { cookbook_id: cookbook.id, name: 'Created Recipe' }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
 
-    it "can not #update" do
-      put :update, params: { cookbook_id: cookbook.id, id: section.id, name: "Updated Section" }
+    it 'can not #update' do
+      put :update, params: { cookbook_id: cookbook.id, id: section.id, name: 'Updated Section' }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
 
-    xit "can not #destroy" do
+    xit 'can not #destroy' do
       delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(:not_found)
     end
   end
 end

@@ -21,8 +21,8 @@
 #
 
 class Section < ApplicationRecord
-  validates_presence_of :name
-  validates_uniqueness_of :general, scope: :cookbook_id, if: :general?
+  validates :name, presence: true
+  validates :general, uniqueness: { scope: :cookbook_id, if: :general? }
   validate :check_not_general, if: :name_changed?, on: :update
 
   belongs_to :cookbook
@@ -34,9 +34,7 @@ class Section < ApplicationRecord
 
   private
 
-    def check_not_general
-      if general
-        errors.add(:name, "Cannot Modify General Section")
-      end
-    end
+  def check_not_general
+    errors.add(:name, 'Cannot Modify General Section') if general
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class V1::SectionsController < ApplicationController
   before_action :authorize_cookbook
 
@@ -6,7 +8,7 @@ class V1::SectionsController < ApplicationController
     if section.save
       render json: section, status: 201
     else
-      render json: { msg: "Create Failed" }, status: 409
+      render json: { msg: 'Create Failed' }, status: 409
     end
   end
 
@@ -15,19 +17,20 @@ class V1::SectionsController < ApplicationController
     if section&.update(section_params)
       render json: section, status: 200
     else
-      render json: { msg: "Update Failed" }, status: 409
+      render json: { msg: 'Update Failed' }, status: 409
     end
   end
 
   private
-    attr_reader :cookbook
 
-    def section_params
-      params.permit(:name)
-    end
+  attr_reader :cookbook
 
-    def authorize_cookbook
-      @cookbook = Cookbook.find(params[:cookbook_id])
-      authorize cookbook, :owns?
-    end
+  def section_params
+    params.permit(:name)
+  end
+
+  def authorize_cookbook
+    @cookbook = Cookbook.find(params[:cookbook_id])
+    authorize cookbook, :owns?
+  end
 end
