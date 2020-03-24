@@ -23,6 +23,8 @@ Metrics/BlockLength:
   Exclude:
     - config/**/*
     - spec/**/*
+    - lib/tasks/auto_annotate_models.rake
+
 Rails/FilePath:
   EnforcedStyle: 'arguments'
 
