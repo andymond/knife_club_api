@@ -18,8 +18,12 @@ gem 'rswag'
 
 group :development, :test do
   gem 'dotenv-rails'
-  gem 'pry-rails', '~> 0.3.9'
   gem 'factory_bot_rails'
+  gem 'rubocop'
+  gem 'rubocop-performance'
+  gem 'rubocop-rails'
+  gem 'rubocop-rspec'
+  gem 'pry-rails', '~> 0.3.9'
 end
 
 group :development do
