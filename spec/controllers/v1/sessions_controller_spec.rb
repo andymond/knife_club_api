@@ -16,7 +16,7 @@ describe V1::SessionsController, type: :controller do
       expect(response).to have_http_status(:created)
       expect(json_response[:token].blank?).to eq(false)
       expect(session).to be_an_instance_of(UserApiSession)
-      expect(session).to be_an_instance_of(ActiveSupport::TimeWithZone)
+      expect(session.api_token_last_verified).to be_an_instance_of(ActiveSupport::TimeWithZone)
       expect(BCrypt::Password.new(user.api_session.api_token_digest)).to eq(json_response[:token])
     end
 

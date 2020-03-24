@@ -5,32 +5,67 @@ require 'rails_helper'
 describe V1::PasswordResetsController do
   let(:user) { create(:user) }
 
-  context 'user token valid' do
-    describe '#create' do
-      before { post :create }
 
-      it { expect(response).to have_http_status(:created) }
+  describe '#create' do
+    it 'creates token' do
+      post :create, params: { email: user.email }
+
+      expect(response).to have_http_status(:created)
+      expect(user.reload.reset_password_token).to be_a(String)
+      expect(user.reload.reset_password_token_expires_at).to be_a(ActiveSupport::TimeWithZone)
     end
+  end
+
+  context 'user token valid' do
+    before { user.deliver_reset_password_instructions! }
 
     describe '#edit' do
-      before do
-        allow(User).to receive(:load_from_reset_password_token).and_return(user)
-        get :edit, params: { id: user.id }
-      end
+      it 'resonds successfully with correct token' do
+        get :edit, params: { token: user.reset_password_token }
 
-      it { expect(response).to have_http_status(:ok) }
+        expect(response).to have_http_status(:ok)
+      end
     end
 
     describe '#update' do
-      let(:password_params) { { password: 'password3', password_confirmation: 'password3' } }
-
-      before do
-        allow(controller).to recieve(:authenticated).and_return(true)
-        allow(User).to receive(:load_from_reset_password_token).and_return(user)
-        put :update, params: { user: password_params }
+      let(:password_params) do
+        { password: 'password3', password_confirmation: 'password3' }
       end
 
-      it { expect(response).to have_http_status(:ok) }
+      it 'succeeds & changes password' do
+        og_password = user.crypted_password
+
+        put :update, params: { user: password_params, token: user.reset_password_token }
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.crypted_password).not_to eq(og_password)
+      end
+    end
+  end
+
+  context 'user token invalid or missing' do
+    it "fails" do
+      get :edit, params: { token: 'badtoken' }
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "fails" do
+      get :edit, params: { token: '' }
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "fails" do
+      put :update, params: { token: 'badtoken' }
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "fails" do
+      put :update
+
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end
