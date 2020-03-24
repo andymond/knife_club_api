@@ -3,81 +3,87 @@
 require 'rails_helper'
 
 describe ApiSessionManager do
+  subject(:manager) { described_class.new(user.id) }
+
   let(:user) { create(:user, password: password, password_confirmation: password) }
   let(:password) { '1Password!' }
-  let(:subject) { described_class.new(user.id) }
 
   describe 'instance methods' do
     context 'try_login' do
       context 'valid credentails' do
         it 'generates api token & logs user in' do
-          result = subject.try_login(password)
+          result = manager.try_login(password)
+          session = user.api_session.reload
 
-          expect(user.api_session.api_token_digest).to be_a(String)
-          expect(user.api_session.api_token_last_verified).to be_an_instance_of(ActiveSupport::TimeWithZone)
-          expect(user.api_session.failed_login_count).to eq(0)
-          expect(user.api_session.lock_expires_at).to be(nil)
+          expect(session.api_token_digest).to be_a(String)
+          expect(session.api_token_last_verified).to be_an_instance_of(ActiveSupport::TimeWithZone)
+          expect(session.failed_login_count).to eq(0)
+          expect(session.lock_expires_at).to be(nil)
           expect(result[:status]).to eq(201)
-          expect(BCrypt::Password.new(user.api_session.api_token_digest)).to eq(result[:token])
+          expect(BCrypt::Password.new(session.api_token_digest)).to eq(result[:token])
         end
       end
 
       context 'invalid credentials' do
         it "doesn't log user in & begins failed attempt count" do
-          result = subject.try_login('wrongPassw0rd')
+          result = manager.try_login('wrongPassw0rd')
+          session = user.api_session.reload
 
-          expect(user.api_session.api_token_digest).to eq(nil)
-          expect(user.api_session.api_token_last_verified).to eq(nil)
-          expect(user.api_session.failed_login_count).to eq(1)
-          expect(user.api_session.lock_expires_at).to be(nil)
+          expect(session.api_token_digest).to eq(nil)
+          expect(session.api_token_last_verified).to eq(nil)
+          expect(session.failed_login_count).to eq(1)
+          expect(session.lock_expires_at).to be(nil)
           expect(result[:status]).to eq(401)
           expect(result[:msg]).to eq('Invalid Credentials')
         end
       end
 
       context '4 failed login attempts' do
-        before { 3.times { |n| subject.try_login("wrongPassw#{n}rd") } }
+        before { 3.times { |n| manager.try_login("wrongPassw#{n}rd") } }
 
         it "doesn't log user in & begins failed attempt countdown" do
-          result = subject.try_login('rightPassw0rd??')
+          result = manager.try_login('rightPassw0rd??')
+          session = user.api_session.reload
 
-          expect(user.api_session.api_token_digest).to eq(nil)
-          expect(user.api_session.api_token_last_verified).to eq(nil)
-          expect(user.api_session.failed_login_count).to eq(4)
-          expect(user.api_session.lock_expires_at).to be(nil)
+          expect(session.api_token_digest).to eq(nil)
+          expect(session.api_token_last_verified).to eq(nil)
+          expect(session.failed_login_count).to eq(4)
+          expect(session.lock_expires_at).to be(nil)
           expect(result[:status]).to eq(401)
           expect(result[:msg]).to eq('2 Login Attempts Remain')
 
-          result = subject.try_login('One last time')
+          result = manager.try_login('One last time')
 
           expect(result[:msg]).to eq('1 Login Attempts Remain')
         end
       end
 
       context '6 failed login attempts' do
-        before { 5.times { |n| subject.try_login("wrongPassw#{n}rd") } }
+        before { 5.times { |n| manager.try_login("wrongPassw#{n}rd") } }
 
         it "doesn't log user in & locks user out" do
-          result = subject.try_login('rightPassw0rd??')
+          result = manager.try_login('rightPassw0rd??')
+          session = user.api_session.reload
 
-          expect(user.api_session.api_token_digest).to eq(nil)
-          expect(user.api_session.api_token_last_verified).to eq(nil)
-          expect(user.api_session.failed_login_count).to eq(6)
-          expect(user.api_session.lock_expires_at).to be_an_instance_of(ActiveSupport::TimeWithZone)
+          expect(session.api_token_digest).to eq(nil)
+          expect(session.api_token_last_verified).to eq(nil)
+          expect(session.failed_login_count).to eq(6)
+          expect(session.lock_expires_at).to be_an_instance_of(ActiveSupport::TimeWithZone)
           expect(result[:status]).to eq(403)
           expect(result[:msg]).to eq('No more login attempts, please try again later.')
         end
 
         it 'allows user to try log in after 15 minutes' do
-          subject.try_login('rightPassw0rd??')
+          manager.try_login('rightPassw0rd??')
+          session = user.api_session.reload
 
-          expect(user.api_session.failed_login_count).to eq(6)
-          expect(user.api_session.locked_out).to eq(true)
+          expect(session.failed_login_count).to eq(6)
+          expect(session.locked_out).to eq(true)
 
           Timecop.travel(15.minutes.from_now)
 
-          expect(user.api_session.locked_out).to eq(false)
-          expect(subject.try_login(password)[:status]).to eq(201)
+          expect(session.locked_out).to eq(false)
+          expect(manager.try_login(password)[:status]).to eq(201)
 
           Timecop.return
         end
@@ -85,32 +91,35 @@ describe ApiSessionManager do
     end
 
     describe '#logout' do
-      before { subject.try_login(password) }
+      before { manager.try_login(password) }
 
       it 'logs user out' do
-        expect(user.api_session.api_token_last_verified).to be_an_instance_of(ActiveSupport::TimeWithZone)
-        result = subject.logout
-        user.api_session.reload
+        current_token = user.api_session.api_token_last_verified
+        expect(current_token).to be_an_instance_of(ActiveSupport::TimeWithZone)
 
-        expect(user.api_session.api_token_digest).to eq(nil)
-        expect(user.api_session.api_token_last_verified).to eq(nil)
-        expect(user.api_session.failed_login_count).to eq(0)
-        expect(user.api_session.lock_expires_at).to be(nil)
+        result = manager.logout
+        session = user.api_session.reload
+
+        expect(session.reload.api_token_digest).to eq(nil)
+        expect(session.api_token_last_verified).to eq(nil)
+        expect(session.failed_login_count).to eq(0)
+        expect(session.lock_expires_at).to be(nil)
         expect(result[:status]).to eq(200)
         expect(result[:msg]).to eq('Logged user out.')
       end
     end
 
     describe '#authenticate' do
-      let!(:token) { subject.try_login(password)[:token] }
+      let!(:token) { manager.try_login(password)[:token] }
 
       context 'valid token' do
         it 'checks user session & api token' do
           Timecop.freeze(Time.current)
           result = described_class.new(user.id).authenticate(token)
+          session = user.api_session.reload
 
           expect(result).to eq(user)
-          expect(user.api_session.api_token_last_verified).to eq(Time.current)
+          expect(session.api_token_last_verified).to eq(Time.current)
           Timecop.return
         end
       end
@@ -127,13 +136,14 @@ describe ApiSessionManager do
         end
 
         context "user doesn't have active session" do
-          before { subject.logout }
+          before { manager.logout }
 
           it "doesn't authenticate" do
             result = described_class.new(user.id).authenticate('sadtoken0987')
+            session = user.api_session.reload
 
             expect(result).to eq(false)
-            expect(user.api_session.reload.api_token_last_verified).to eq(nil)
+            expect(session.api_token_last_verified).to eq(nil)
           end
         end
       end

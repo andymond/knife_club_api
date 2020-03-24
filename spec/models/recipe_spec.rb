@@ -35,16 +35,17 @@ describe Recipe do
   end
 
   context 'relationships' do
+    let(:cool_chef) { create(:user) }
+    let(:doomed_recipe) { create(:recipe, section: doomed_section) }
+    let(:ingredient) { doomed_recipe.ingredients.create(name: 'Lime') }
+    let(:doomed_instruction) { doomed_recipe.instructions.create(step: 1, text: 'Test') }
+
     it { is_expected.to belong_to(:section) }
     it { is_expected.to have_many(:instructions) }
     it { is_expected.to have_many(:recipe_ingredients) }
     it { is_expected.to have_many(:ingredients) }
 
     it 'destroys its user roles, ingredient joins and instructions' do
-      cool_chef = create(:user)
-      doomed_recipe = create(:recipe)
-      ingredient = doomed_recipe.ingredients.create(name: 'Lime')
-      doomed_instruction = doomed_recipe.instructions.create(step: 1, text: 'Put the lime in the coconut')
       cool_chef.grant_all_access(doomed_recipe)
 
       doomed_recipe.destroy

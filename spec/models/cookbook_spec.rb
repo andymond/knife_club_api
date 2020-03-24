@@ -24,15 +24,16 @@ describe Cookbook do
   end
 
   context 'relationships' do
+    let(:cool_chef) { create(:user) }
+    let(:doomed_cookbook) { create(:cookbook) }
+    let(:doomed_section) { doomed_cookbook.general_section }
+    let(:doomed_recipe) { create(:recipe, section: doomed_section) }
+
     it { is_expected.to have_many(:user_cookbook_roles) }
     it { is_expected.to have_many(:users) }
     it { is_expected.to have_many(:sections) }
 
     it 'destroys its user roles, sections and recipes if destroyed' do
-      cool_chef = create(:user)
-      doomed_cookbook = create(:cookbook)
-      doomed_section = doomed_cookbook.general_section
-      doomed_recipe = create(:recipe, section: doomed_section)
       cool_chef.grant_all_access(doomed_cookbook)
 
       doomed_cookbook.destroy

@@ -11,7 +11,7 @@ describe V1::CookbooksController, type: :controller do
   let(:private_cookbook) { create(:cookbook, public: false) }
 
   before do
-    allow_any_instance_of(ApplicationController).to receive(:authenticate).and_return(true)
+    allow(controller).to receive(:authenticate).and_return(true)
     owner.grant_all_access(private_cookbook)
     owner.grant_all_access(public_cookbook)
     contributor.allow_contributions_to(private_cookbook)
@@ -22,7 +22,7 @@ describe V1::CookbooksController, type: :controller do
 
   context 'any authd user' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(rando)
+      allow(controller).to receive(:current_user).and_return(rando)
     end
 
     describe '#create' do
@@ -47,7 +47,7 @@ describe V1::CookbooksController, type: :controller do
 
   context 'user owns cookbook' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(owner)
+      allow(controller).to receive(:current_user).and_return(owner)
     end
 
     it 'can #index' do
@@ -88,7 +88,7 @@ describe V1::CookbooksController, type: :controller do
 
   context 'user contributes to cookbook' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(contributor)
+      allow(controller).to receive(:current_user).and_return(contributor)
     end
 
     it 'can #index' do
@@ -129,7 +129,7 @@ describe V1::CookbooksController, type: :controller do
 
   context 'user can read cookbook' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(reader)
+      allow(controller).to receive(:current_user).and_return(reader)
     end
 
     it 'can #index' do
@@ -168,7 +168,7 @@ describe V1::CookbooksController, type: :controller do
 
   context 'user is not associated with cookbook,' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(rando)
+      allow(controller).to receive(:current_user).and_return(rando)
     end
 
     describe '#index' do

@@ -11,6 +11,8 @@ AllCops:
 
 Layout/LineLength:
     Max: 100
+    Exclude:
+      - config/initializers/sorcery.rb
 
 Lint/AmbiguousBlockAssociation:
   Exclude:
@@ -21,13 +23,20 @@ Metrics/BlockLength:
     - config/**/*
     - spec/**/*
 
-RSpec/NestedGroups:
+RSpec/AnyInstance:
+  Exclude:
+    - spec/integration/*
+
+RSpec/ContextWording:
   Enabled: false
+
+RSpec/ExampleLength:
+  Max: 10
 
 RSpec/MultipleExpectations:
   Enabled: false
 
-RSpec/ContextWording:
+RSpec/NestedGroups:
   Enabled: false
 
 Style/Documentation:

@@ -38,18 +38,18 @@ describe User do
   end
 
   context 'validations' do
-    let(:user) { described_class.new }
+    subject(:user) { described_class.new }
 
     it 'validates password' do
       user.password = 'xy'
       user.valid?
 
       expect(user.errors[:password]).to include('is too short (minimum is 3 characters)')
-      expect(subject).to validate_presence_of(:password_confirmation)
+      expect(user).to validate_presence_of(:password_confirmation)
     end
 
     it 'validates email' do
-      expect(subject).to validate_presence_of(:email)
+      expect(user).to validate_presence_of(:email)
       invalid_email = ['lameemail', 'notreal@', 'fakecontactinfo.com'].sample
       user.email = invalid_email
       user.valid?
@@ -121,14 +121,18 @@ describe User do
     describe '#allow_to_read(cookbook)' do
       it 'grants reader role to user' do
         reader = create(:user)
-        expect { reader.allow_to_read(cookbook) }.to change { reader.user_cookbook_roles.where(cookbook: cookbook, role: Role.reader).count }.by 1
+        roles = reader.user_cookbook_roles.where(cookbook: cookbook, role: Role.reader)
+
+        expect { reader.allow_to_read(cookbook) }.to change { roles.count }.by 1
       end
     end
 
     describe '#allow_contributions_to(cookbook)?' do
       it 'grants contribution role to user' do
         contributor = create(:user)
-        expect { contributor.allow_contributions_to(cookbook) }.to change { contributor.user_cookbook_roles.where(cookbook: cookbook, role: Role.contributor).count }.by 1
+        roles = contributor.user_cookbook_roles.where(cookbook: cookbook, role: Role.contributor)
+
+        expect { contributor.allow_contributions_to(cookbook) }.to change { roles.count }.by 1
       end
     end
   end

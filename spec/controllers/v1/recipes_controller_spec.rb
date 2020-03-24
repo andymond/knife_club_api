@@ -11,7 +11,7 @@ describe V1::RecipesController, type: :controller do
   let(:recipe) { create(:recipe, section: cookbook.general_section) }
 
   before do
-    allow_any_instance_of(ApplicationController).to receive(:authenticate).and_return(true)
+    allow(controller).to receive(:authenticate).and_return(true)
     owner.grant_all_access(cookbook)
     owner.grant_all_access(recipe)
     contributor.allow_contributions_to(cookbook)
@@ -21,7 +21,7 @@ describe V1::RecipesController, type: :controller do
 
   context 'user owns cookbook' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(owner)
+      allow(controller).to receive(:current_user).and_return(owner)
     end
 
     context 'cookbook is private or public' do
@@ -71,7 +71,7 @@ describe V1::RecipesController, type: :controller do
 
   context 'user contributes to cookbook' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(contributor)
+      allow(controller).to receive(:current_user).and_return(contributor)
     end
 
     context 'cookbook is private or public' do
@@ -126,7 +126,7 @@ describe V1::RecipesController, type: :controller do
 
   context 'user can read cookbook' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(reader)
+      allow(controller).to receive(:current_user).and_return(reader)
     end
 
     context 'cookbook is private' do
@@ -178,7 +178,7 @@ describe V1::RecipesController, type: :controller do
 
   context 'user is not associated with cookbook,' do
     before do
-      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(rando)
+      allow(controller).to receive(:current_user).and_return(rando)
     end
 
     context 'cookbook is private' do
