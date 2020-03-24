@@ -9,17 +9,26 @@ AllCops:
     - 'script/**/*'
     - 'bin/**/*'
 
-Metrics/LineLength:
-  Max: 100
+Layout/LineLength:
+    Max: 100
+
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - spec/**/*
 
 Metrics/BlockLength:
   Exclude:
     - config/**/*
     - spec/**/*
 
-Lint/AmbiguousBlockAssociation:
-  Exclude:
-    - spec/**/*
-
 Style/Documentation:
+  Enabled: false
+
+Style/HashEachMethods:
+  Enabled: false
+
+Style/HashTransformKeys:
+  Enabled: false
+
+Style/HashTransformValues:
   Enabled: false

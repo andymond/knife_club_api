@@ -9,7 +9,7 @@
 #
 
 class Ingredient < ApplicationRecord
-  validates_presence_of :name
+  validates :name, presence: true
 
   has_many :recipe_ingredients
   has_many :recipes, through: :recipe_ingredients

@@ -19,7 +19,7 @@
 #
 
 class Instruction < ApplicationRecord
-  validates_presence_of :text
+  validates :text, presence: true
 
   belongs_to :recipe
 end

@@ -1,6 +1,6 @@
 class V1::RecipesController < ApplicationController
-  before_action :authorize_cookbook_update, except: %i(index show)
-  before_action :authorize_cookbook_view, only: %i(index show)
+  before_action :authorize_cookbook_update, except: %i[index show]
+  before_action :authorize_cookbook_view, only: %i[index show]
 
   def create
     recipe = current_user.create_permission_record(Recipe, recipe_params)
@@ -8,7 +8,7 @@ class V1::RecipesController < ApplicationController
       cookbook.owners.each { |ou| ou.grant_all_access(recipe) }
       render json: recipe, status: 201
     else
-      render json: { msg: "Create Failed" }, status: 409
+      render json: { msg: 'Create Failed' }, status: 409
     end
   end
 
@@ -19,7 +19,7 @@ class V1::RecipesController < ApplicationController
   end
 
   def index
-    check_roles = "SELECT DISTINCT urr.id FROM user_recipe_roles urr WHERE urr.user_id = ?"
+    check_roles = 'SELECT DISTINCT urr.id FROM user_recipe_roles urr WHERE urr.user_id = ?'
     has_permission = "recipes.public = true OR recipes.id IN (#{check_roles})"
     section_recipes = cookbook.sections.find(params[:section_id]).recipes
     recipes = section_recipes.where(has_permission, current_user.id)
@@ -47,21 +47,22 @@ class V1::RecipesController < ApplicationController
   end
 
   private
-    attr_reader :cookbook
 
-    def recipe_params
-      attrs = params.permit(:section_id, :name, :public)
-      attrs[:section_id] = cookbook.general_section.id if attrs[:section_id].blank?
-      attrs
-    end
+  attr_reader :cookbook
 
-    def authorize_cookbook_update
-      @cookbook = Cookbook.find(params[:cookbook_id])
-      authorize cookbook, :update?
-    end
+  def recipe_params
+    attrs = params.permit(:section_id, :name, :public)
+    attrs[:section_id] = cookbook.general_section.id if attrs[:section_id].blank?
+    attrs
+  end
 
-    def authorize_cookbook_view
-      @cookbook = Cookbook.find(params[:cookbook_id])
-      authorize cookbook, :show?
-    end
+  def authorize_cookbook_update
+    @cookbook = Cookbook.find(params[:cookbook_id])
+    authorize cookbook, :update?
+  end
+
+  def authorize_cookbook_view
+    @cookbook = Cookbook.find(params[:cookbook_id])
+    authorize cookbook, :show?
+  end
 end

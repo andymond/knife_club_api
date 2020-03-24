@@ -22,12 +22,12 @@
 #  fk_rails_...  (user_id => users.id)
 #
 
-require "rails_helper"
+require 'rails_helper'
 
 describe UserCookbookRole do
-  context "relationships" do
-    it { should belong_to(:user) }
-    it { should belong_to(:role) }
-    it { should belong_to(:cookbook) }
+  context 'relationships' do
+    it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:role) }
+    it { is_expected.to belong_to(:cookbook) }
   end
 end

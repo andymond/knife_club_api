@@ -10,17 +10,17 @@
 
 class Role < ApplicationRecord
   has_many :user_cookbook_roles
-  has_many :cookbook_users, through: :user_cookbook_roles, foreign_key: "user_id", class_name: "User"
+  has_many :cookbook_users, through: :user_cookbook_roles, foreign_key: 'user_id', class_name: 'User'
 
   Rails.configuration.roles.each do |name|
     define_singleton_method(name) do
       instance_variable_get("@#{name}") ||
-      instance_variable_set("@#{name}", find_by(name: name))
+        instance_variable_set("@#{name}", find_by(name: name))
     end
   end
 
   Rails.configuration.roles.each do |name|
-    define_method(name + "?") do
+    define_method(name + '?') do
       self.name == name
     end
   end

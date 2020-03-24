@@ -6,16 +6,18 @@ class ApplicationController < ActionController::API
   attr_reader :current_user
 
   private
-    def authenticate
-      session_manager = ApiSessionManager.new(request.headers["User"])
-      token = request.headers["Authorization"]
-      if authenticated = session_manager.authenticate(token)
-        @current_user = authenticated
-      else
-        render json: { errors: "Invalid Credential" }, status: 401
-      end
+
+  def authenticate
+    session_manager = ApiSessionManager.new(request.headers['User'])
+    token = request.headers['Authorization']
+    if (authenticated = session_manager.authenticate(token))
+      @current_user = authenticated
+    else
+      render json: { errors: 'Invalid Credential' }, status: 401
     end
-    def not_found
-      head 404
-    end
+  end
+
+  def not_found
+    head 404
+  end
 end

@@ -1,11 +1,11 @@
-require "swagger_helper"
+require 'swagger_helper'
 
-describe "Users API" do
-  path "/v1/users" do
-    post "Register User" do
+describe 'Users API' do
+  path '/v1/users' do
+    post 'Register User' do
       tags 'Users'
-      consumes "application/json"
-      produces "application/json"
+      consumes 'application/json'
+      produces 'application/json'
       parameter name: :user, in: :body, schema: {
         type: :object,
         properties: {
@@ -17,34 +17,34 @@ describe "Users API" do
               phone_number: { type: :string },
               email: { type: :string },
               password: { type: :string },
-              password_confirmation: { type: :string },
+              password_confirmation: { type: :string }
             }
           }
         },
-        required: ["first_name", "email", "phone_number", "password", "password_confirmation"]
+        required: %w[first_name email phone_number password password_confirmation]
       }
 
-      response "201", "Registered User" do
-        let(:user) {
+      response '201', 'Registered User' do
+        let(:user) do
           {
             user: {
-              first_name: "Cool",
-              last_name: "User",
-              email: "cool@user.com",
-              phone_number: "",
-              password: "1!Passsword",
-              password_confirmation: "1!Passsword"
+              first_name: 'Cool',
+              last_name: 'User',
+              email: 'cool@user.com',
+              phone_number: '',
+              password: '1!Passsword',
+              password_confirmation: '1!Passsword'
             }
           }
-        }
-        examples created: { msg: "Created Account", id: "1" }
+        end
+        examples created: { msg: 'Created Account', id: '1' }
         run_test!
       end
 
-      response "409", "Registration Failed" do
-        let(:user) { { user: { email: "cool" } } }
-        schema "$ref" => "#/definitions/msg"
-        examples "$ref" => "#/definitions/msg"
+      response '409', 'Registration Failed' do
+        let(:user) { { user: { email: 'cool' } } }
+        schema '$ref' => '#/definitions/msg'
+        examples '$ref' => '#/definitions/msg'
 
         run_test!
       end

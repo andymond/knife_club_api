@@ -13,11 +13,11 @@ class V1::SessionsController < ApplicationController
 
   private
 
-    def session_manager
-      ApiSessionManager.new(current_user || user_from_params)
-    end
+  def session_manager
+    ApiSessionManager.new(current_user || user_from_params)
+  end
 
-    def user_from_params
-      User.find_by(email: params[:email])
-    end
+  def user_from_params
+    User.find_by(email: params[:email])
+  end
 end

@@ -6,17 +6,17 @@ class V1::UsersController < ApplicationController
     if user.save
       created(user)
     else
-      render json: { msg: "Create Failed" }, status: 409
+      render json: { msg: 'Create Failed' }, status: 409
     end
   end
 
   private
 
-    def user_params
-      params.require(:user).permit(:first_name, :last_name, :phone_number, :email, :password, :password_confirmation)
-    end
+  def user_params
+    params.require(:user).permit(:first_name, :last_name, :phone_number, :email, :password, :password_confirmation)
+  end
 
-    def created(user)
-      render json: { user: user.id, msg: "Created Account" }, status: 201
-    end
+  def created(user)
+    render json: { user: user.id, msg: 'Created Account' }, status: 201
+  end
 end

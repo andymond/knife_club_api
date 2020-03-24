@@ -41,12 +41,12 @@ RSpec.configure do |config|
         },
         cookbook_list: {
           type: :object,
-            properties: {
-              cookbooks: {
-                type: :array,
-                cookbook: { "$ref" => "#/definitions/cookbook" }
-              }
+          properties: {
+            cookbooks: {
+              type: :array,
+              cookbook: { '$ref' => '#/definitions/cookbook' }
             }
+          }
         },
         cookbook: {
           type: :object,
@@ -58,12 +58,12 @@ RSpec.configure do |config|
         },
         recipe_list: {
           type: :object,
-            properties: {
-              recipes: {
-                type: :array,
-                cookbook: { "$ref" => "#/definitions/recipe" }
-              }
+          properties: {
+            recipes: {
+              type: :array,
+              cookbook: { '$ref' => '#/definitions/recipe' }
             }
+          }
         },
         recipe: {
           type: :object,
@@ -79,7 +79,7 @@ RSpec.configure do |config|
             first_name: { type: :string },
             last_name: { type: :string },
             email: { type: :string },
-            phone_number: { type: :string },
+            phone_number: { type: :string }
           }
         }
       },

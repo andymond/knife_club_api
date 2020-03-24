@@ -25,11 +25,11 @@
 class User < ApplicationRecord
   authenticates_with_sorcery!
 
-  has_one :api_session, class_name: "UserApiSession"
+  has_one :api_session, class_name: 'UserApiSession'
   has_many :user_cookbook_roles
   has_many :user_recipe_roles
-  has_many :cookbook_roles, through: :user_cookbook_roles, foreign_key: :role_id, class_name: "Role"
-  has_many :recipe_roles, through: :user_recipe_roles, foreign_key: :role_id, class_name: "Role"
+  has_many :cookbook_roles, through: :user_cookbook_roles, foreign_key: :role_id, class_name: 'Role'
+  has_many :recipe_roles, through: :user_recipe_roles, foreign_key: :role_id, class_name: 'Role'
   has_many :cookbooks, -> { distinct }, through: :user_cookbook_roles
   has_many :recipes, -> { distinct }, through: :user_recipe_roles
 
@@ -38,7 +38,7 @@ class User < ApplicationRecord
   validates :password_confirmation, presence: true, if: -> { new_record? || changes[:crypted_password] }
 
   validates :email, presence: true, uniqueness: true
-  validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   def create_permission_record(klass, attrs)
     record = klass.create(attrs)
@@ -52,6 +52,7 @@ class User < ApplicationRecord
 
   def can_read?(record)
     return true if record.public
+
     role = send(record.role_set).find_by(record.role_key => record, role: Role.reader)
     role ? true : false
   end

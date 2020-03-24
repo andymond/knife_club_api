@@ -396,30 +396,25 @@ Rails.application.config.sorcery.configure do |config|
     #
     # user.magic_login_token_attribute_name =
 
-
     # expires at attribute name.
     # Default: `:magic_login_token_expires_at`
     #
     # user.magic_login_token_expires_at_attribute_name =
-
 
     # when was email sent, used for hammering protection.
     # Default: `:magic_login_email_sent_at`
     #
     # user.magic_login_email_sent_at_attribute_name =
 
-
     # mailer class. Needed.
     # Default: `nil`
     #
     # user.magic_login_mailer_class =
 
-
     # magic login email method on your mailer class.
     # Default: `:magic_login_email`
     #
     # user.magic_login_email_method_name =
-
 
     # when true sorcery will not automatically
     # email magic login details and allow you to
@@ -428,12 +423,10 @@ Rails.application.config.sorcery.configure do |config|
     #
     # user.magic_login_mailer_disabled =
 
-
     # how many seconds before the request expires. nil for never expires.
     # Default: `nil`
     #
     # user.magic_login_expiration_period =
-
 
     # hammering protection, how long in seconds to wait before allowing another email to be sent.
     # Default: `5 * 60`

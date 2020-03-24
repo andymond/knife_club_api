@@ -18,14 +18,14 @@
 #  fk_rails_...  (recipe_id => recipes.id)
 #
 
-require "rails_helper"
+require 'rails_helper'
 
 describe Instruction do
-  context "relationships" do
-    it { should belong_to(:recipe) }
+  context 'relationships' do
+    it { is_expected.to belong_to(:recipe) }
   end
 
-  context "validations" do
-    it { should validate_presence_of(:text) }
+  context 'validations' do
+    it { is_expected.to validate_presence_of(:text) }
   end
 end

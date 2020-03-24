@@ -8,16 +8,15 @@
 #  updated_at :datetime         not null
 #
 
-require "rails_helper"
+require 'rails_helper'
 
 describe Ingredient do
-  context "relationships" do
-    it { should have_many(:recipe_ingredients) }
-    it { should have_many(:recipes) }
+  context 'relationships' do
+    it { is_expected.to have_many(:recipe_ingredients) }
+    it { is_expected.to have_many(:recipes) }
   end
 
-  context "validations" do
-    it { should validate_presence_of(:name) }
+  context 'validations' do
+    it { is_expected.to validate_presence_of(:name) }
   end
-
 end

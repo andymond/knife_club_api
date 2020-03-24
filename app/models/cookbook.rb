@@ -12,7 +12,7 @@
 class Cookbook < ApplicationRecord
   include PermissionRecord
 
-  validates_presence_of :name
+  validates :name, presence: true
 
   has_many :user_cookbook_roles, dependent: :destroy
   has_many :users, through: :user_cookbook_roles
@@ -32,13 +32,14 @@ class Cookbook < ApplicationRecord
   end
 
   def general_section
-    general_name = self.name + " general"
-    self.sections.find_by(name: general_name)
+    general_name = name + ' general'
+    sections.find_by(name: general_name)
   end
 
   private
-    def add_general_section
-      general_name = self.name + " general"
-      self.sections.create(name: general_name)
-    end
+
+  def add_general_section
+    general_name = name + ' general'
+    sections.create(name: general_name)
+  end
 end
