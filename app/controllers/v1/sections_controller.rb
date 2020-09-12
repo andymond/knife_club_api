@@ -27,9 +27,8 @@ module V1
       section = cookbook.sections.find_by(id: params[:id])
       if section
         handle_general_destroy if section.general
-        handle_destroy(section, cookbook.general_section) if !section.general && !move_to && !destroy_recipes
-        handle_destroy(section, move_to) if !section.general && move_to && !destroy_recipes
-        handle_destroy_all(section) if !section.general && destroy_recipes
+        handle_move_destroy(section, move_to || cookbook.general_section) if !section.general && !destroy_recipes
+        handle_destroy(section, "Destroyed #{section.name} and its recipes") if !section.general && destroy_recipes
       else
         head 404
       end
@@ -60,17 +59,16 @@ module V1
       render json: { msg: "Cannot destroy general section" }, status: 403
     end
 
-    def handle_destroy(section, new_section)
+    def handle_move_destroy(section, new_section)
       section.recipes.update_all(section_id: new_section.id, updated_at: DateTime.now)
       section.destroy
       msg = "Destroyed #{section.name} and moved its recipes to #{new_section.name}"
-      render json: { msg: msg }
+      handle_destroy(section, msg)
     end
 
-    def handle_destroy_all(section)
+    def handle_destroy(section, msg)
       section.destroy
-      msg = "Destroyed #{section.name} and its recipes"
-      render json: { msg: msg}
+      render json: { msg: msg }
     end
   end
 end
