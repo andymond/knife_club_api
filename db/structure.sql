@@ -249,7 +249,8 @@ CREATE TABLE public.sections (
     name character varying NOT NULL,
     cookbook_id bigint,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    general boolean DEFAULT false
 );
 
 
@@ -810,6 +811,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190526191944'),
 ('20200321005105'),
 ('20200321042604'),
-('20200321182651');
+('20200321182651'),
+('20200322220123');
 
 

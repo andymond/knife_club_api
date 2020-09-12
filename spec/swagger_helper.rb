@@ -75,6 +75,12 @@ RSpec.configure do |config|
             id: { type: :integer }
           }
         },
+        section: {
+          type: :object,
+          properties: {
+            name: { type: :string }
+          }
+        },
         user: {
           type: :object,
           properties: {

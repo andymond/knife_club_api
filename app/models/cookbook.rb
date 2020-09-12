@@ -22,6 +22,9 @@ class Cookbook < ApplicationRecord
   has_many :recipes, through: :sections
 
   after_create :add_general_section
+  before_destroy :remove_general_sections, prepend: true
+
+  scope :alphabetized, -> { order(:name) }
 
   def owners
     owner_ids = user_cookbook_roles.where(role: Role.owner).distinct.pluck(:user_id)
@@ -42,6 +45,10 @@ class Cookbook < ApplicationRecord
 
   def add_general_section
     general_name = name + ' general'
-    sections.create(name: general_name)
+    sections.create!(name: general_name, general: true)
+  end
+
+  def remove_general_sections
+    general_section.update(general: false)
   end
 end

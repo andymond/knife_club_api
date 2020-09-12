@@ -31,4 +31,6 @@ class Recipe < ApplicationRecord
   has_many :user_recipe_roles, dependent: :destroy
   has_many :ingredients, through: :recipe_ingredients
   has_many :users, through: :user_recipe_roles
+
+  scope :alphabetized, -> { order(:name) }
 end

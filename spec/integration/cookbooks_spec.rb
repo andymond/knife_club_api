@@ -59,7 +59,7 @@ describe 'Cookbooks API' do
   path '/v1/cookbooks/{id}' do
     parameter name: :id, in: :path, schema: { type: :string }
 
-    get 'Gets A Cookbook' do
+    get "Gets A Cookbook & Its Sections" do
       tags 'Cookbooks'
       security [{ api_key: [] }, { user_id: [] }]
 

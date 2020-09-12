@@ -18,7 +18,7 @@ module V1
     end
 
     def index
-      render json: current_user.cookbooks
+      render json: current_user.cookbooks.alphabetized
     end
 
     def update
