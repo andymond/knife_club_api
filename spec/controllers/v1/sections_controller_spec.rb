@@ -50,7 +50,7 @@ describe V1::SectionsController do
       end
     end
 
-    xcontext 'can #destroy' do
+    context 'can #destroy' do
       it 'defaults to destroying section & moving recipes to general' do
         delete :destroy, params: { cookbook_id: cookbook.id, id: section.id }
         payload = JSON.parse(response.body, symbolize_names: true)
@@ -63,7 +63,7 @@ describe V1::SectionsController do
 
       it 'destroys section & moves recipes to different section if specified' do
         new_section = create(:section, cookbook: cookbook)
-        delete :destroy, params: { cookbook_id: cookbook.id, id: section.id }
+        delete :destroy, params: { cookbook_id: cookbook.id, id: section.id, move_to: new_section.id }
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(:ok)
@@ -72,13 +72,13 @@ describe V1::SectionsController do
         )
       end
 
-      it 'destroys section & its recipes if specified' do
-        delete :destroy, params: { cookbook_id: cookbook.id, id: section.id }
-        payload = JSON.parse(response.body, symbolize_names: true)
-
-        expect(response).to have_http_status(:ok)
-        expect(payload[:msg]).to eq("Destroyed #{section.name} and its recipes")
-      end
+      # it 'destroys section & its recipes if specified' do
+      #   delete :destroy, params: { cookbook_id: cookbook.id, id: section.id, destroy_recipes: true }
+      #   payload = JSON.parse(response.body, symbolize_names: true)
+      # 
+      #   expect(response).to have_http_status(:ok)
+      #   expect(payload[:msg]).to eq("Destroyed #{section.name} and its recipes")
+      # end
 
       it 'wont remove general section' do
         delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }
