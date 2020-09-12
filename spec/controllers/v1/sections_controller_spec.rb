@@ -105,7 +105,7 @@ describe V1::SectionsController do
       expect(response).to have_http_status(:not_found)
     end
 
-    xit 'can not #destroy' do
+    it 'can not #destroy' do
       delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }
 
       expect(response).to have_http_status(:not_found)
@@ -129,7 +129,7 @@ describe V1::SectionsController do
       expect(response).to have_http_status(:not_found)
     end
 
-    xit 'can not #destroy' do
+    it 'can not #destroy' do
       delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }
 
       expect(response).to have_http_status(:not_found)
@@ -153,7 +153,7 @@ describe V1::SectionsController do
       expect(response).to have_http_status(:not_found)
     end
 
-    xit 'can not #destroy' do
+    it 'can not #destroy' do
       delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }
 
       expect(response).to have_http_status(:not_found)
