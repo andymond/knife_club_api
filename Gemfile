@@ -8,13 +8,12 @@ ruby '2.7.0'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'puma', '~> 3.11'
-gem 'rails', '~> 5.2.2'
+gem 'rails', '~> 5.2'
 
 gem 'active_model_serializers', '~> 0.10.8'
 gem 'bcrypt', '~> 3.1.7'
 gem 'paranoia', '~> 2.4', '>= 2.4.1'
 gem 'pundit'
-gem 'rswag'
 gem 'sorcery'
 gem 'symmetric-encryption', '~> 4.1', '>= 4.1.2'
 
