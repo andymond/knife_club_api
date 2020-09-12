@@ -72,13 +72,13 @@ describe V1::SectionsController do
         )
       end
 
-      # it 'destroys section & its recipes if specified' do
-      #   delete :destroy, params: { cookbook_id: cookbook.id, id: section.id, destroy_recipes: true }
-      #   payload = JSON.parse(response.body, symbolize_names: true)
-      # 
-      #   expect(response).to have_http_status(:ok)
-      #   expect(payload[:msg]).to eq("Destroyed #{section.name} and its recipes")
-      # end
+      it 'destroys section & its recipes if specified' do
+        delete :destroy, params: { cookbook_id: cookbook.id, id: section.id, destroy_recipes: true }
+        payload = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(:ok)
+        expect(payload[:msg]).to eq("Destroyed #{section.name} and its recipes")
+      end
 
       it 'wont remove general section' do
         delete :destroy, params: { cookbook_id: cookbook.id, id: cookbook.general_section.id }

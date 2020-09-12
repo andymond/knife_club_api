@@ -3,7 +3,7 @@
 module V1
   class SectionsController < ApplicationController
     before_action :authorize_cookbook
-    before_action :move_to, only: %(destroy)
+    before_action :move_to, :destroy_recipes, only: %(destroy)
 
     def create
       section = cookbook.sections.new(section_params)
@@ -27,8 +27,9 @@ module V1
       section = cookbook.sections.find_by(id: params[:id])
       if section
         handle_general_destroy if section.general
-        handle_destroy(section, cookbook.general_section) if !section.general && !move_to
-        handle_destroy(section, move_to) if !section.general && move_to
+        handle_destroy(section, cookbook.general_section) if !section.general && !move_to && !destroy_recipes
+        handle_destroy(section, move_to) if !section.general && move_to && !destroy_recipes
+        handle_destroy_all(section) if !section.general && destroy_recipes
       else
         head 404
       end
@@ -39,7 +40,7 @@ module V1
     attr_reader :cookbook
 
     def section_params
-      params.permit(:name, :move_to)
+      params.permit(:name, :move_to, :destroy_recipes)
     end
 
     def authorize_cookbook
@@ -48,7 +49,11 @@ module V1
     end
 
     def move_to
-      Section.find_by(id: params[:move_to])
+      Section.find_by(id: params[:move_to]) unless params[:destroy_recipes]
+    end
+
+    def destroy_recipes
+      params[:destroy_recipes] == "true" ? true : false
     end
 
     def handle_general_destroy
@@ -60,6 +65,12 @@ module V1
       section.destroy
       msg = "Destroyed #{section.name} and moved its recipes to #{new_section.name}"
       render json: { msg: msg }
+    end
+
+    def handle_destroy_all(section)
+      section.destroy
+      msg = "Destroyed #{section.name} and its recipes"
+      render json: { msg: msg}
     end
   end
 end
