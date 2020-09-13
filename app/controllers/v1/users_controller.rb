@@ -3,7 +3,7 @@
 module V1
   class UsersController < ApplicationController
     skip_before_action :authenticate, only: :create
-    before_action :validate_user, only: %i[show update]
+    before_action :validate_user, only: %i[show update destroy]
 
     def create
       user = User.new(user_params)
@@ -21,6 +21,14 @@ module V1
     def update
       if current_user&.update(user_params)
         render json: current_user
+      else
+        render json: current_user.errors.messages, status: 409
+      end
+    end
+
+    def destroy
+      if current_user.destroy
+        head 200
       else
         render json: current_user.errors.messages, status: 409
       end

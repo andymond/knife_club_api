@@ -75,5 +75,20 @@ describe V1::UsersController do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    describe "#destroy" do
+      it "allows current user to soft delete themselves" do
+        delete :destroy, params: { id: current_user.id }
+
+        expect(response).to have_http_status(:ok)
+        expect(User.find_by(id: current_user.id)).to eq(nil)
+      end
+
+      it "does not allow current user to delete other user" do
+        delete :destroy, params: { id: other_user.id }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 end
