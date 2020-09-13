@@ -2,7 +2,7 @@
 
 Rails.application.routes.draw do
   namespace :v1 do
-    resources :users, only: %i[create show]
+    resources :users, only: %i[create show update]
     resources :sessions, only: [:create]
     delete 'sessions', to: 'sessions#destroy'
     post 'password_resets', to: 'password_resets#create'
