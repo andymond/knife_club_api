@@ -12,7 +12,6 @@ gem 'rails', '~> 5.2'
 
 gem 'active_model_serializers', '~> 0.10.8'
 gem 'bcrypt', '~> 3.1.7'
-gem 'paranoia', '~> 2.4', '>= 2.4.1'
 gem 'pundit'
 gem 'sorcery'
 gem 'symmetric-encryption', '~> 4.1', '>= 4.1.2'
