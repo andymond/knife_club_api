@@ -26,13 +26,7 @@ module V1
     def destroy
       section = cookbook.sections.find_by(id: params[:id])
       if section
-        handle_general_destroy if section.general
-        if !section.general && !destroy_recipes
-          handle_move_destroy(section, move_to || cookbook.general_section)
-        end
-        if !section.general && destroy_recipes
-          handle_destroy(section, "Destroyed #{section.name} and its recipes")
-        end
+        destroy_section(section)
       else
         head 404
       end
@@ -57,6 +51,16 @@ module V1
 
     def destroy_recipes
       params[:destroy_recipes] == 'true'
+    end
+
+    def destroy_section(section)
+      if section.general
+        handle_general_destroy
+      elsif !section.general && !destroy_recipes
+        handle_move_destroy(section, move_to || cookbook.general_section)
+      elsif !section.general && destroy_recipes
+        handle_destroy(section, "Destroyed #{section.name} and its recipes")
+      end
     end
 
     def handle_general_destroy

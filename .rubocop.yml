@@ -28,6 +28,10 @@ Metrics/BlockLength:
 Rails/FilePath:
   EnforcedStyle: 'arguments'
 
+Rails/SkipsModelValidations:
+  Exclude:
+    - app/controllers/v1/sections_controller.rb
+
 RSpec/ContextWording:
   Enabled: false
 

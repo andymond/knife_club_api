@@ -20,9 +20,7 @@ class Role < ApplicationRecord
       instance_variable_get("@#{name}") ||
         instance_variable_set("@#{name}", find_by(name: name))
     end
-  end
 
-  Rails.configuration.roles.each do |name|
     define_method("#{name}?") do
       self.name == name
     end

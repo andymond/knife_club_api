@@ -43,7 +43,7 @@ describe V1::UsersController do
     let(:other_user) { create(:user) }
 
     before do
-      allow_any_instance_of(ApplicationController).to receive(:authenticate).and_return(true)
+      allow(controller).to receive(:authenticate).and_return(true)
       allow(controller).to receive(:current_user).and_return(current_user)
     end
 
