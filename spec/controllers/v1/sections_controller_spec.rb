@@ -63,7 +63,8 @@ describe V1::SectionsController do
 
       it 'destroys section & moves recipes to different section if specified' do
         new_section = create(:section, cookbook: cookbook)
-        delete :destroy, params: { cookbook_id: cookbook.id, id: section.id, move_to: new_section.id }
+        params = { cookbook_id: cookbook.id, id: section.id, move_to: new_section.id }
+        delete :destroy, params: params
         payload = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to have_http_status(:ok)

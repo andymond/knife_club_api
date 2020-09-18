@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserMailer < ApplicationMailer
-  default from: 'admin@' + ENV['KNIFE_CLUB_URL'].to_s
+  default from: "admin@#{ENV['KNIFE_CLUB_URL']}"
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
   #

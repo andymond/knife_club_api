@@ -4,11 +4,11 @@ require:
   - rubocop-rspec
 
 AllCops:
+  NewCops: enable
   Exclude:
     - 'db/**/*'
     - 'script/**/*'
     - 'bin/**/*'
-    - 'spec/integration/*'
 
 Layout/LineLength:
     Max: 100
@@ -28,11 +28,18 @@ Metrics/BlockLength:
 Rails/FilePath:
   EnforcedStyle: 'arguments'
 
+Rails/SkipsModelValidations:
+  Exclude:
+    - app/controllers/v1/sections_controller.rb
+
 RSpec/ContextWording:
   Enabled: false
 
 RSpec/ExampleLength:
   Max: 10
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
 
 RSpec/MultipleExpectations:
   Enabled: false
