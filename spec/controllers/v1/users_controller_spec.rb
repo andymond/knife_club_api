@@ -38,7 +38,7 @@ describe V1::UsersController do
     end
   end
 
-  context "existing authenticated user" do
+  context 'existing authenticated user' do
     let(:current_user) { create(:user) }
     let(:other_user) { create(:user) }
 
@@ -47,44 +47,43 @@ describe V1::UsersController do
       allow(controller).to receive(:current_user).and_return(current_user)
     end
 
-
-    describe "#show" do
-      it "allows current user to view their own info" do
+    describe '#show' do
+      it 'allows current user to view their own info' do
         get :show, params: { id: current_user.id }
 
         expect(response).to have_http_status(:ok)
       end
 
-      it "does not allow current user to view other user" do
+      it 'does not allow current user to view other user' do
         get :show, params: { id: other_user.id }
 
         expect(response).to have_http_status(:not_found)
       end
     end
 
-    describe "#update" do
-      it "allows current user to update their own info" do
-        put :update, params: { id: current_user.id, user: { email: "new_email@email.com" } }
+    describe '#update' do
+      it 'allows current user to update their own info' do
+        put :update, params: { id: current_user.id, user: { email: 'new_email@email.com' } }
 
         expect(response).to have_http_status(:ok)
       end
 
-      it "does not allow current user to update other user" do
-        put :update, params: { id: other_user.id, email: "new_email@email.com" }
+      it 'does not allow current user to update other user' do
+        put :update, params: { id: other_user.id, email: 'new_email@email.com' }
 
         expect(response).to have_http_status(:not_found)
       end
     end
 
-    describe "#destroy" do
-      it "allows current user to soft delete themselves" do
+    describe '#destroy' do
+      it 'allows current user to soft delete themselves' do
         delete :destroy, params: { id: current_user.id }
 
         expect(response).to have_http_status(:ok)
         expect(User.find_by(id: current_user.id)).to eq(nil)
       end
 
-      it "does not allow current user to delete other user" do
+      it 'does not allow current user to delete other user' do
         delete :destroy, params: { id: other_user.id }
 
         expect(response).to have_http_status(:not_found)

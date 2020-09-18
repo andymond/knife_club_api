@@ -8,7 +8,6 @@ AllCops:
     - 'db/**/*'
     - 'script/**/*'
     - 'bin/**/*'
-    - 'spec/integration/*'
 
 Layout/LineLength:
     Max: 100
@@ -33,6 +32,9 @@ RSpec/ContextWording:
 
 RSpec/ExampleLength:
   Max: 10
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
 
 RSpec/MultipleExpectations:
   Enabled: false
