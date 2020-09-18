@@ -37,14 +37,14 @@ class Cookbook < ApplicationRecord
   end
 
   def general_section
-    general_name = name + ' general'
+    general_name = "#{name} general"
     sections.find_by(name: general_name)
   end
 
   private
 
   def add_general_section
-    general_name = name + ' general'
+    general_name = "#{name} general"
     sections.create!(name: general_name, general: true)
   end
 

@@ -23,7 +23,7 @@ class Role < ApplicationRecord
   end
 
   Rails.configuration.roles.each do |name|
-    define_method(name + '?') do
+    define_method("#{name}?") do
       self.name == name
     end
   end
